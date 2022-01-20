@@ -1,0 +1,71 @@
+{% extends "layout/base.html" %}
+
+{% block title %}{{ user.username }}{% endblock %}
+
+{% block content %}
+
+{% if form %}
+{% for field, errors in form.errors.items() %}
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ ', '.join(errors) }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+{% endfor %}
+{% endif %}
+
+<div class="row">
+  <div class="col-md-4">
+    <div class="card">
+      <img class="card-img-top" src="https://www.fragrancebuddy.com/images/products/display/turq.png" alt="Card image" style="width: 100%">
+      <div class="card-body">
+        <h4 class="card-title">{{ user.username }}</h4>
+        <p class="card-text">{{ user.description }}</p>
+        {% if current_user == user %}
+        <a href="{{ url_for('profile.settings') }}" class="btn btn-primary btn-block">Edit Profile</a>
+        {% else %}
+        <div class="btn-group btn-block">
+          <a href="#" class="btn btn-primary">Contact</a>
+          <a href="#" class="btn btn-primary">Follow</a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-8">
+    <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <a class="nav-link active" data-toggle="tab" href="#overview">Overview</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" href="#trips">Planned Trips</a>
+      </li>
+      {% if current_user == user %}
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" href="#settings">Settings</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" href="#inbox">Inbox</a>
+      </li>
+      {% endif %}
+    </ul>
+
+    <br>
+    
+    <!-- Tab panes -->
+    <div class="tab-content">
+      <div class="tab-pane container active" id="overview">...</div>
+      <div class="tab-pane container fade" id="trips">
+      </div>
+      {% if current_user == user %}
+      <div class="tab-pane container fade" id="settings">
+        {% include "profile/settings.html" %}
+      </div>
+      <div class="tab-pane container fade" id="inbox">...</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

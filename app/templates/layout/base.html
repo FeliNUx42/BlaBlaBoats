@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script> 
+  <title>{% block title %}Home{% endblock %}</title>
+  <script>
+    $(document).ready(function(){
+      $('[data-toggle="popover"]').popover();
+
+      var url = document.location.toString();
+      if (url.match('#')) {
+          $('.nav-tabs a[href="#' + url.split('#')[1] + '"]').tab('show');
+      }
+    });
+  </script>
+  <style>
+    #banner {
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center;
+      background-image: url('{{ url_for("static", filename="banner2.jpeg")}}');
+    }
+  </style>
+</head>
+<body>
+  <div style="min-height: 100vh;">
+    {% block banner %}{% endblock %}
+
+    <nav  class="navbar navbar-expand-sm bg-dark navbar-dark sticky-top">
+      <a href="#" class="navbar-brand">
+        BlaBlaBoat
+      </a>
+  
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+  
+      <div class="collapse navbar-collapse" id="collapsibleNavbar">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('home.index')}}">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Contact</a>
+          </li>
+          {% if current_user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+              {{ current_user.username }}
+            </a>
+            <div class="dropdown-menu dropdown-menu-dark">
+              <a class="dropdown-item" href="{{ url_for('profile.prof', uid=current_user.uid) }}">Dashboard</a>
+              <a class="dropdown-item" href="{{ url_for('profile.settings') }}">Settings</a>
+              <a class="dropdown-item" href="{{ url_for('profile.security') }}">Change Password</a>
+            </div>
+          </li>
+          {% else %}
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('auth.login') }}">Log In</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('auth.signup') }}">Sign Up</a>
+          </li>
+          {% endif %}
+        </ul>
+      </div>
+    </nav>
+    
+    <main class="container">
+      <br>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          {% endfor%}
+        {% endif %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+      <br>
+    </main>
+  </div>
+
+  <footer class="jumbotron text-center" style="margin-bottom: 0;">
+    <p>Footer</p>
+  </footer>
+</body>
+</html>

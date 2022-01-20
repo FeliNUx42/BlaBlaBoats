@@ -1,0 +1,44 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Log In{% endblock %}
+
+{% block content %}
+
+{% for field, errors in form.errors.items() %}
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ ', '.join(errors) }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+{% endfor %}
+
+<form class="form-horizontal" method="POST" action="">
+
+  <div class="form-group">
+    <h2>Change Password</h2>
+  </div>
+
+  {{ form.csrf_token() }}
+
+  <div class="form-group">
+    <label class="control-label" for="">{{ form.o_password.label }}</label>
+    <div>{{ form.o_password(class="form-control") }}</div>
+  </div>
+
+  <div class="form-group">
+    <label class="control-label" for="">{{ form.n_password.label }}</label>
+    <div>{{ form.n_password(class="form-control") }}</div>
+  </div>
+
+  <div class="form-group">
+    <label class="control-label" for="">{{ form.r_password.label }}</label>
+    <div>{{ form.r_password(class="form-control") }}</div>
+  </div>
+
+  <div class="form-group">
+    <div>{{ form.submit(class="btn btn-primary")}}</div>
+  </div>
+
+</form>
+{% endblock %}

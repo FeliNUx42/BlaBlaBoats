@@ -1,0 +1,41 @@
+<form class="form-horizontal" method="POST" action="{{ url_for('profile.settings') }}">
+
+  <div class="form-group">
+    <h2>Settings</h2>
+  </div>
+
+  {{ form.csrf_token() }}
+
+  <div class="form-group">
+    <label class="control-label" for="">{{ form.username.label }}</label>
+    <div>{{ form.username(class="form-control") }}</div>
+  </div>
+
+  <div class="form-group">
+    <label class="control-label" for="">{{ form.description.label }}</label>
+    <a href="javascript:void()0"; title="User Description" data-toggle="popover" data-trigger="hover"
+    data-content="Talk about your experiences, why you use BlaBlaBoat, what type of people you're looking for, etc."> (more Information)</a>
+    <div>{{ form.description(class="form-control") }}</div>
+  </div>
+
+  <div class="form-group">
+    <label class="control-label" for="">{{ form.first_name.label }}</label>
+    <div>{{ form.first_name(class="form-control") }}</div>
+  </div>
+
+  <div class="form-group">
+    <label class="control-label" for="">{{ form.last_name.label }}</label>
+    <div>{{ form.last_name(class="form-control") }}</div>
+  </div>
+
+  <div class="form-group">
+    <label class="control-label" for="">{{ form.birthday.label }}</label>
+    <div>{{ form.birthday(class="form-control") }}</div>
+  </div>
+
+  <div class="form-group">
+    <div>{{ form.submit(class="btn btn-primary")}}</div>
+  </div>
+
+</form>
+     
