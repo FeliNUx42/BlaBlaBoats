@@ -58,6 +58,7 @@
     <div class="tab-content">
       <div class="tab-pane container active" id="overview">...</div>
       <div class="tab-pane container fade" id="trips">
+        {% include "profile/trips.html" %}
       </div>
       {% if current_user == user %}
       <div class="tab-pane container fade" id="settings">

@@ -22,7 +22,7 @@ class User(db.Model, UserMixin):
   #profile_pic = db.Column(db.String(128), default="default.png")
   password_hash = db.Column(db.String(128))
 
-  trips = db.relationship("Trip", backref="skipper", lazy=True)
+  trips = db.relationship("Trip", backref="skipper", lazy="dynamic")
 
   @property
   def password(self):
@@ -41,6 +41,10 @@ class User(db.Model, UserMixin):
     age = relativedelta.relativedelta(today, self.birthday)
 
     return age.years
+  
+  @property
+  def full_name(self):
+    return self.first_name + " " + self.last_name
   
   def get_token(self, command, expire_sec=1800):
     s = Serializer(current_app.config['SECRET_KEY'], expire_sec)
@@ -62,14 +66,21 @@ class User(db.Model, UserMixin):
 
 class Trip(db.Model):
   id = db.Column(db.Integer, primary_key=True)
-  uid = db.Column(db.String(), unique=True)
-  title = db.Column(db.String(128), unique=True)
-  description = db.Column(db.String(1024), default="This user does not have a description...")
-  mode = db.Column(db.String(128))
-  #created = db.Column(db.DateTime(timezone=True), default=datetime.utcnow)
+  uid = db.Column(db.String(16), unique=True)
+  title = db.Column(db.String(72), unique=True)
+  description = db.Column(db.String(2048), default="This user does not have a description...")
+  boat_type = db.Column(db.String(64))
+  boat_model = db.Column(db.String(64))
+  sailing_mode = db.Column(db.String(64))
+  travel_expenses = db.Column(db.String(64))
+  qualif_level = db.Column(db.String(64))
+  created = db.Column(db.DateTime(timezone=True), default=datetime.utcnow)
   #picture = db.Column(db.String(128), default="default.png")
 
   user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+  destinations = db.relationship("Destination", backref="trip", lazy="dynamic")
+  banner = db.relationship("Image", uselist=False, backref="trip")
+  image = db.relationship("Image", lazy="dynamic")
 
   def __repr__(self):
     return f'<Trip({self.id}, {self.uid}, {self.title})>'
@@ -77,9 +88,19 @@ class Trip(db.Model):
 
 class Destination(db.Model):
   id = db.Column(db.Integer, primary_key=True)
+  order = db.Column(db.Integer)
   name = db.Column(db.String(128))
   arrival = db.Column(db.Date)
   departure = db.Column(db.Date)
 
+  d_trip_id = db.Column(db.Integer, db.ForeignKey("trip.id"))
+
   def __repr__(self):
     return f'<Destination({self.id}, {self.name})>'
+
+
+class Image(db.Model):
+  id = db.Column(db.Integer, primary_key=True)
+  url = db.Column(db.String(20))
+
+  i_trip_id = db.Column(db.Integer, db.ForeignKey("trip.id"))

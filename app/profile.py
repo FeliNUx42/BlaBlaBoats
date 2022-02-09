@@ -1,34 +1,32 @@
-from crypt import methods
-from os import abort
-from flask import Blueprint, render_template, redirect, request, url_for, flash, request
+from flask import Blueprint, render_template, redirect, request, url_for, flash, request, abort
 from flask_login import login_required, current_user
 from .models import User
-from .forms import SettingsForm, ChangePasswordForm
+from .forms import SettingsForm
 from . import db
 
 
 profile = Blueprint("profile", __name__)
 
-@profile.route("/user/<uid>")
-def prof(uid):
+@profile.route("/<uid>")
+def user_page(uid):
   user = User.query.filter_by(uid=uid).first_or_404()
   if user == current_user:
     form = SettingsForm()
   else:
     form = False
   
-  trips=user.trips
+  trips=user.trips.all()
 
   return render_template("profile/prof.html", user=user, form=form, trips=trips)
 
 
-@login_required
 @profile.route('/settings', methods=["GET", "POST"])
+@login_required
 def settings():
   form = SettingsForm()
 
   if request.method == "GET":
-    return redirect(url_for("profile.prof", uid=current_user.uid) + "#settings")
+    return redirect(url_for("profile.user_page", uid=current_user.uid) + "#settings")
 
   if not form.validate_on_submit():
     abort(403)
@@ -46,23 +44,5 @@ def settings():
   else:
     flash("This Username is already taken.", "danger")
   
-  return redirect(url_for("profile.prof", uid=current_user.uid) + "#settings")
+  return redirect(url_for("profile.user_page", uid=current_user.uid) + "#settings")
 
-
-@login_required
-@profile.route("/security", methods=["GET", "POST"])
-def security():
-  form = ChangePasswordForm()
-
-  if form.validate_on_submit():
-    if current_user.verify_password(form.o_password.data):
-      current_user.password = form.n_password.data
-
-      db.session.commit()
-
-      flash("Password changed successfully.", "success")
-      return redirect(url_for("profile.prof", uid=current_user.uid))
-      
-    flash("The old password doesn't match.", "danger")
-
-  return render_template("profile/security.html", form=form)

@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash
 from flask_login import current_user, login_user, logout_user, login_required
-from .forms import SignupForm, LoginForm
+from .forms import SignupForm, LoginForm, ChangePasswordForm
 from .models import User
 from . import db
 import os
@@ -28,7 +28,7 @@ def signup():
 
     flash("Account created successfully.", "success")
 
-    return redirect(url_for("profile.prof", uid=user.uid))
+    return redirect(url_for("profile.user_page", uid=user.uid))
 
   return render_template("auth/signup.html", form=form)
 
@@ -44,18 +44,37 @@ def login():
 
       flash("Logged in successfully.", "success")
 
-      return redirect(url_for("profile.prof", uid=user.uid))
+      return redirect(url_for("profile.user_page", uid=user.uid))
     
     flash("Wrong username or password.", "danger")
 
   return render_template("auth/login.html", form=form)
 
 
-@login_required
 @auth.route("/logout")
+@login_required
 def logout():
   logout_user()
 
   flash("Logged out successfully.", "success")
   
   return redirect(url_for("home.index"))
+
+
+@auth.route("/security", methods=["GET", "POST"])
+@login_required
+def security():
+  form = ChangePasswordForm()
+
+  if form.validate_on_submit():
+    if current_user.verify_password(form.o_password.data):
+      current_user.password = form.n_password.data
+
+      db.session.commit()
+
+      flash("Password changed successfully.", "success")
+      return redirect(url_for("profile.user_page", uid=current_user.uid))
+      
+    flash("The old password doesn't match.", "danger")
+
+  return render_template("auth/security.html", form=form)
