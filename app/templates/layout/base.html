@@ -28,7 +28,7 @@
       background-repeat: no-repeat;
       background-size: cover;
       background-position: center;
-      background-image: url('{{ url_for("static", filename="banner2.jpeg")}}');
+      background-image: url('{{ url_for("static", filename="banner.jpeg")}}');
     }
   </style>
 </head>
@@ -38,7 +38,8 @@
 
     <nav  class="navbar navbar-expand-sm bg-dark navbar-dark sticky-top">
       <div class="container">
-        <a href="#" class="navbar-brand">
+        <a href="{{ url_for('home.index') }}" class="navbar-brand">
+          <img src="{{ url_for('static', filename='logo.png') }}" alt="" height="27px" class="mr-2">
           BlaBlaBoat
         </a>
     

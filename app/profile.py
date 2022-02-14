@@ -1,8 +1,10 @@
-from flask import Blueprint, render_template, redirect, request, url_for, flash, request, abort
+from flask import Blueprint, render_template, redirect, request, url_for, flash, request, abort, current_app
 from flask_login import login_required, current_user
+from PIL import Image as PImage
 from .models import User
 from .forms import SettingsForm
 from . import db
+import os
 
 
 profile = Blueprint("profile", __name__)
@@ -29,7 +31,7 @@ def settings():
     return redirect(url_for("profile.user_page", uid=current_user.uid) + "#settings")
 
   if not form.validate_on_submit():
-    abort(403)
+    return redirect(url_for("profile.user_page", uid=current_user.uid))
 
   if form.username.data == current_user.username or not User.query.filter_by(username=form.username.data).first():
     current_user.username = form.username.data
@@ -37,6 +39,18 @@ def settings():
     current_user.first_name = form.first_name.data
     current_user.last_name = form.last_name.data
     current_user.birthday = form.birthday.data
+
+    if form.picture.data:
+      if current_user.profile_pic != "default.png":
+        old_path = os.path.join(current_app.root_path, current_app.config["PICTURES_FOLDER"], current_user.profile_pic)
+        os.remove(old_path)
+
+      i = PImage.open(form.picture.data)
+      filename = os.urandom(8).hex() + os.path.splitext(form.picture.data.filename)[-1]
+      new_path = os.path.join(current_app.root_path, current_app.config["PICTURES_FOLDER"], filename)
+      i.save(new_path)
+
+      current_user.profile_pic = filename
 
     db.session.commit()
 

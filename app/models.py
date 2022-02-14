@@ -19,7 +19,7 @@ class User(db.Model, UserMixin):
   birthday = db.Column(db.Date)
   #created = db.Column(db.DateTime(timezone=True), default=datetime.utcnow)
   #confirmed = db.Column(db.Boolean, default=False)
-  #profile_pic = db.Column(db.String(128), default="default.png")
+  profile_pic = db.Column(db.String(24), default="default.png")
   password_hash = db.Column(db.String(128))
 
   trips = db.relationship("Trip", backref="skipper", lazy="dynamic")
@@ -79,8 +79,8 @@ class Trip(db.Model):
 
   user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
   destinations = db.relationship("Destination", backref="trip", lazy="dynamic")
-  banner = db.relationship("Image", uselist=False, backref="trip")
-  image = db.relationship("Image", lazy="dynamic")
+  banner = db.Column(db.String(24), default="default.png")
+  images = db.relationship("Image", lazy="dynamic")
 
   def __repr__(self):
     return f'<Trip({self.id}, {self.uid}, {self.title})>'
@@ -101,6 +101,6 @@ class Destination(db.Model):
 
 class Image(db.Model):
   id = db.Column(db.Integer, primary_key=True)
-  url = db.Column(db.String(20))
+  url = db.Column(db.String(24))
 
   i_trip_id = db.Column(db.Integer, db.ForeignKey("trip.id"))

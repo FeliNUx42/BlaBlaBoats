@@ -39,15 +39,16 @@ def edit(uid):
     trip.qualif_level = form.qualif_level.data
 
     if form.banner.data:
-      old_path = os.path.join(current_app.root_path, current_app.config["PICTURES_FOLDER"], trip.banner.url)
-      os.remove(old_path)
+      if trip.banner != "default.png":
+        old_path = os.path.join(current_app.root_path, current_app.config["PICTURES_FOLDER"], trip.banner)
+        os.remove(old_path)
 
       i = PImage.open(form.banner.data)
       filename = os.urandom(8).hex() + os.path.splitext(form.banner.data.filename)[-1]
       new_path = os.path.join(current_app.root_path, current_app.config["PICTURES_FOLDER"], filename)
       i.save(new_path)
 
-      trip.banner.url = filename
+      trip.banner = filename
     
     for d in trip.destinations.all():
       db.session.delete(d)
@@ -119,14 +120,9 @@ def create():
       filename = os.urandom(8).hex() + os.path.splitext(form.banner.data.filename)[-1]
       path = os.path.join(current_app.root_path, current_app.config["PICTURES_FOLDER"], filename)
       i.save(path)
-    else:
-      filename = "default.png"
-      
-    img = Image()
-    img.url = filename
-    img.trip = trip
 
-    db.session.add(img)
+      trip.banner = filename
+ 
 
     for i, d in enumerate(form.dest.data):
       dest = Destination()
@@ -160,8 +156,8 @@ def delete(uid):
   if trip.skipper != current_user:
     abort(403)
 
-  if trip.banner.url != "default.png":
-    banner = os.path.join(current_app.root_path, current_app.config["PICTURES_FOLDER"], trip.banner.url)
+  if trip.banner != "default.png":
+    banner = os.path.join(current_app.root_path, current_app.config["PICTURES_FOLDER"], trip.banner)
     os.remove(banner)
 
   db.session.delete(trip)
