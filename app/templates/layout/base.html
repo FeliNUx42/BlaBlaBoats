@@ -13,16 +13,6 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script> 
   {{ moment.include_moment() }}
   <title>{% block title %}Home{% endblock %}</title>
-  <script>
-    $(document).ready(function(){
-      $('[data-toggle="popover"]').popover();
-
-      var url = document.location.toString();
-      if (url.match('#')) {
-          $('.nav-tabs a[href="#' + url.split('#')[1] + '"]').tab('show');
-      }
-    });
-  </script>
   <style>
     #home-banner {
       background-repeat: no-repeat;
@@ -107,11 +97,6 @@
   <footer class="jumbotron jumbotron-fluid text-center" style="margin-bottom: 0;">
     <p>Footer</p>
   </footer>
+  <script src="{{ url_for('static', filename='main.js') }}"></script>
 </body>
-<script>
-  $(".custom-file-input").on("change", function() {
-    var fileName = $(this).val().split("\\").pop();
-    $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
-  });
-</script>
 </html>

@@ -16,13 +16,15 @@ class User(db.Model, UserMixin):
   first_name = db.Column(db.String(128))
   last_name = db.Column(db.String(128))
   description = db.Column(db.String(1024), default="This user does not have a description...")
-  birthday = db.Column(db.Date)
+  #birthday = db.Column(db.Date)
   #created = db.Column(db.DateTime(timezone=True), default=datetime.utcnow)
   #confirmed = db.Column(db.Boolean, default=False)
   profile_pic = db.Column(db.String(24), default="default.png")
   password_hash = db.Column(db.String(128))
 
   trips = db.relationship("Trip", backref="skipper", lazy="dynamic")
+  msg_sent = db.relationship("Message", foreign_keys="Message.sender_id", backref="sender", lazy="dynamic")
+  msg_received = db.relationship("Message", foreign_keys="Message.receiver_id", backref="receiver", lazy="dynamic")
 
   @property
   def password(self):
@@ -35,12 +37,14 @@ class User(db.Model, UserMixin):
   def verify_password(self, password):
     return check_password_hash(self.password_hash, password)
   
+  """
   @property
   def age(self):
     today = date.today()
     age = relativedelta.relativedelta(today, self.birthday)
 
     return age.years
+  """
   
   @property
   def full_name(self):
@@ -75,12 +79,11 @@ class Trip(db.Model):
   travel_expenses = db.Column(db.String(64))
   qualif_level = db.Column(db.String(64))
   created = db.Column(db.DateTime(timezone=True), default=datetime.utcnow)
-  #picture = db.Column(db.String(128), default="default.png")
 
   user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
   destinations = db.relationship("Destination", backref="trip", lazy="dynamic")
   banner = db.Column(db.String(24), default="default.png")
-  images = db.relationship("Image", lazy="dynamic")
+  images = db.relationship("Image", backref="trip", lazy="dynamic")
 
   def __repr__(self):
     return f'<Trip({self.id}, {self.uid}, {self.title})>'
@@ -104,3 +107,15 @@ class Image(db.Model):
   url = db.Column(db.String(24))
 
   i_trip_id = db.Column(db.Integer, db.ForeignKey("trip.id"))
+
+
+class Message(db.Model):
+  id = db.Column(db.Integer, primary_key=True)
+  uid = db.Column(db.String(16), unique=True)
+  subject = db.Column(db.String(64))
+  text = db.Column(db.String(2048))
+  created = db.Column(db.DateTime(timezone=True), default=datetime.utcnow)
+  read = db.Column(db.Boolean, default=False)
+
+  sender_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+  receiver_id = db.Column(db.Integer, db.ForeignKey("user.id"))

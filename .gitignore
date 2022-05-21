@@ -4,3 +4,4 @@ __pycache__
 app/__pycache__
 app/database.db
 app/static/pictures/*
+!app/static/pictures/default.png

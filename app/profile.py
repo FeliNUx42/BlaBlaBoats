@@ -59,4 +59,3 @@ def settings():
     flash("This Username is already taken.", "danger")
   
   return redirect(url_for("profile.user_page", uid=current_user.uid) + "#settings")
-

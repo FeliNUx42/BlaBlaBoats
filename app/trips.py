@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from PIL import Image as PImage
 from datetime import datetime
 from .models import Destination, User, Trip, Image
-from .forms import ContactForm, CreateEditTripForm, Place
+from .forms import ContactForm, CreateEditTripForm, Place, AddImage, DeleteImage
 from . import db
 import os
 
@@ -17,7 +17,7 @@ def trip_page(uid):
 
   destinations = trip.destinations.order_by(Destination.order.asc()).all()
 
-  return render_template("trips/trip.html", trip=trip, destinations=destinations, form=form)
+  return render_template("trips/trip.html", trip=trip, destinations=destinations, form=form, enumerate=enumerate)
    
 
 @trips.route("/<uid>/edit", methods=["GET", "POST"])
@@ -93,7 +93,7 @@ def edit(uid):
     elif i == len(form.dest) - 1: d.place.label.text = "Arrival"
     else: d.place.label.text = f"Stopover {i}"
 
-  return render_template("trips/create_edit.html", form=form, title="Edit Trip", enumerate=enumerate, len=len)
+  return render_template("trips/create_edit.html", form=form, title="Edit Trip", enumerate=enumerate, len=len, trip=trip)
 
 
 @trips.route("/create", methods=["GET", "POST"])
@@ -159,8 +159,49 @@ def delete(uid):
   if trip.banner != "default.png":
     banner = os.path.join(current_app.root_path, current_app.config["PICTURES_FOLDER"], trip.banner)
     os.remove(banner)
+  
+  # need to delete images, destinations...
 
   db.session.delete(trip)
   db.session.commit()
 
   return redirect(url_for("profile.user_page", uid=current_user.uid))
+
+
+@trips.route("/<uid>/pictures", methods=["GET", "POST"])
+@login_required
+def pictures(uid):
+  trip = Trip.query.filter_by(uid=uid).first_or_404()
+  add_form = AddImage()
+  del_form = DeleteImage()
+
+  if trip.skipper != current_user:
+    abort(403)
+  
+  if add_form.add_submit.data and add_form.validate():
+    i = PImage.open(add_form.image.data)
+    filename = os.urandom(8).hex() + os.path.splitext(add_form.image.data.filename)[-1]
+    path = os.path.join(current_app.root_path, current_app.config["PICTURES_FOLDER"], filename)
+    i.save(path)
+
+    img = Image()
+    img.url = filename
+    img.trip = trip
+
+    db.session.add(img)
+    db.session.commit()
+
+    flash("Image added successfully.", "success")
+
+  if del_form.del_submit.data and del_form.validate():
+    img = trip.images.filter_by(url=del_form.image.data).first()
+    if not img: abort(403)
+    path = os.path.join(current_app.root_path, current_app.config["PICTURES_FOLDER"], del_form.image.data)
+    os.remove(path)
+    
+    db.session.delete(img)
+    db.session.commit()
+
+    flash("Image deleted successfully.", "success")
+  
+  return render_template("trips/edit_pictures.html", add_form=add_form, del_form=del_form, trip=trip)

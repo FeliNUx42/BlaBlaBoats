@@ -1,6 +1,6 @@
 from flask_login import current_user
 from flask_wtf import FlaskForm
-from wtforms import Form, StringField, TextAreaField, PasswordField, BooleanField, DateField, SelectField, SubmitField, FileField, FieldList, FormField, IntegerField
+from wtforms import Form, StringField, TextAreaField, PasswordField, BooleanField, DateField, SelectField, SubmitField, FileField, FieldList, FormField, HiddenField
 from wtforms.validators import ValidationError, DataRequired, Length, Email, EqualTo, Optional
 from flask_wtf.file import FileRequired, FileAllowed
 from .models import User
@@ -45,7 +45,7 @@ class SettingsForm(FlaskForm):
   picture = FileField(label="Profile Picture", validators=[FileAllowed(["jpg", "png", "jpeg"], "Only images are accepted!")])
   first_name = StringField(label="First Name:", validators=[DataRequired(), Length(4, 128)], default=lambda: current_user.first_name)
   last_name = StringField(label="Last Name:", validators=[DataRequired(), Length(4, 128)], default=lambda: current_user.last_name)
-  birthday = DateField("Date of birth:", validators=[Optional()], default=lambda: current_user.birthday)
+  #birthday = DateField("Date of birth:", validators=[Optional()], default=lambda: current_user.birthday)
   submit = SubmitField("Save changes")
 
 
@@ -73,3 +73,11 @@ class ContactForm(FlaskForm):
   subject = StringField(label="Subject", validators=[DataRequired(), Length(max=64)])
   content = TextAreaField(label="Content", validators=[DataRequired(), Length(max=2048)])
   submit = SubmitField("Send message")
+
+class AddImage(FlaskForm):
+  image = FileField(label="Image", validators=[DataRequired(), FileAllowed(["jpg", "png", "jpeg"], "Only images are accepted!")])
+  add_submit = SubmitField("Add Image")
+
+class DeleteImage(FlaskForm):
+  image = HiddenField(label="Image", validators=[DataRequired()])
+  del_submit = SubmitField("Delete this Image")

@@ -1,0 +1,64 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Edit Images{% endblock %}
+
+{% block content %}
+
+{% for field, errors in add_form.errors.items() %}
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ errors }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+{% endfor %}
+
+{% for field, errors in del_form.errors.items() %}
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ errors }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+{% endfor %}
+
+<h2>Your Images (<a href="{{ url_for('trips.trip_page', uid=trip.uid) }}" max-length="30">{{ trip.title }}</a>) <button class="btn btn-primary float-right"  data-toggle="modal" data-target="#addImg">Add Image</button> </h2>
+<br>
+<div class="d-flex flex-wrap justify-content-between">
+  {% for img in trip.images.all() %}
+  <form class="card mb-4" style="width:300px;" method="POST" action="">
+    <img class="card-img-top" src="{{ url_for('static', filename='pictures/'+img.url) }}" style="width:300px; height:300px; object-fit: contain; object-position: center; background-color: #343a40;">
+    {{ del_form.csrf_token() }}
+    {{ del_form.image(value=img.url) }}
+    {{ del_form.del_submit(class="btn btn-danger", style="width: 300px; border-radius: 0 0 .25rem .25rem;") }}
+  </form>
+  {% endfor %}
+</div>
+
+<form class="modal" id="addImg" method="POST" action="" enctype="multipart/form-data">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h4 class="modal-title">Add Image</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="custom-file mt-2 mb-3">
+          {{ add_form.image(class="custom-file-input", id="file-banner") }}
+          {{ add_form.image.label(class="custom-file-label", for="file-banner") }}
+
+          {{ add_form.csrf_token() }}
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        {{ add_form.add_submit(class="btn btn-primary")}}
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+      </div>
+
+    </div>
+  </div>
+</form>
+{% endblock %}

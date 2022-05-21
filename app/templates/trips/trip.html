@@ -4,7 +4,7 @@
 
 {% block content%}
 <div class="jumbotron p-5">
-  <div class="d-xl-flex justify-content-between" style="gap: 30px; justify-content: stretch;">
+  <div class="d-lg-flex justify-content-between" style="gap: 30px; justify-content: stretch;">
     <div class="flex-grow-1"  style="width:100%;">
       <h2>{{ trip.title }}</h2>
       <hr>
@@ -48,28 +48,28 @@
       
       {% endif %}
     </div>
-    <div class="flex-grow-1">
+    <div class="flex-grow-1" style="width:100%; height: 275px;">
       <img src="{{ url_for('static', filename='pictures/'+trip.banner) }}" style="width: 100%; height: 100%; object-fit: contain; object-position: center;">
   </div>
   </div>
 </div>
 
 <div>
-  <h3 data-toggle="collapse" data-target="#desc" class="mb-4">
+  <h3 data-toggle="collapse" data-target="#desc">
     <i class="lni lni-circle-plus" style="display:none"></i>
     <i class="lni lni-circle-minus"></i>
     Description
   </h3>
-  <div class="collapse mb-4 show" id="desc">{{ trip.description }}</div>
+  <div class="collapse show m-3" id="desc">{{ trip.description }}</div>
 </div>
-<hr>
+<hr class="m-2">
 <div>
-  <h3 data-toggle="collapse" data-target="#dest" class="mb-4">
+  <h3 data-toggle="collapse" data-target="#dest">
     <i class="lni lni-circle-plus"></i>
     <i class="lni lni-circle-minus"  style="display:none"></i>
     Destinations
   </h3>
-  <div class="collapse mb-4" id="dest">
+  <div class="collapse m-3" id="dest">
     <table class="table">
       <thead>
         <tr>
@@ -84,8 +84,8 @@
         {% for destination in destinations %}
         <tr>
           <td>{{ destination.name }}</td>
-          <td>{{ moment(destination.arrival).format("DD MMM, YYYY") if destination.arrival else "<i>Not set</i>" | safe }}</td>
-          <td>{{ moment(destination.departure).format("DD MMM, YYYY") if destination.departure else "<i>Not set</i>" | safe }}</td>
+          <td>{{ moment(destination.arrival).format("DD MMM, YYYY") if destination.arrival else "---" }}</td>
+          <td>{{ moment(destination.departure).format("DD MMM, YYYY") if destination.departure else "---" }}</td>
           <td><button class="btn btn-primary btn-sm">Show on map</button></td>
         </tr>
         {% endfor %}
@@ -98,14 +98,14 @@
     </table>
   </div>
 </div>
-<hr>
+<hr class="m-2">
 <div>
-  <h3 data-toggle="collapse" data-target="#info" class="mb-4">
+  <h3 data-toggle="collapse" data-target="#info">
     <i class="lni lni-circle-plus"></i>
     <i class="lni lni-circle-minus" style="display:none"></i>
     More Information
   </h3>
-  <div class="collapse mb-4" id="info">
+  <div class="collapse m-3" id="info">
     <div class="row mb-4">
       <div class="col">
         <h5 style="font-size:16px">Boat type</h5>
@@ -138,32 +138,31 @@
     </div>
   </div>
 </div>
-<hr>
+<hr class="m-2">
 <div>
-  <h3 data-toggle="collapse" data-target="#imgs" class="mb-4">
+  <h3 data-toggle="collapse" data-target="#imgs">
     <i class="lni lni-circle-plus"></i>
     <i class="lni lni-circle-minus" style="display:none"></i>
     Images
+    {% if current_user == trip.skipper %}
+    <a href="{{ url_for('trips.pictures', uid=trip.uid) }}" class="btn btn-primary ml-4 btn-sm" target="_blank">Add & Remove Images</a>
+    {% endif %}
   </h3>
-  <div class="collapse mb-4 carousel slide" data-ride="carousel" id="imgs">
+  <div class="collapse m-3 carousel slide" data-ride="carousel" id="imgs">
     <!-- Indicators -->
     <ul class="carousel-indicators">
-      <li data-target="#imgs" data-slide-to="0" class="active"></li>
-      <li data-target="#imgs" data-slide-to="1"></li>
-      <li data-target="#imgs" data-slide-to="2"></li>
+      {% for i in range(trip.images.count()) %}
+      <li data-target="#imgs" data-slide-to="{{ i }}" class="{{ '' if i else 'active' }}"></li>
+      {% endfor %}
     </ul>
   
     <!-- The slideshow -->
     <div class="carousel-inner bg-dark">
-      <div class="carousel-item active">
-        <img src="https://news-palstek.de/wp-content/uploads/2021/06/SVB_Team_Lorient5-1030x686.jpg" style="height: 500px; width: 100%; object-fit: contain; object-position: center;">
+      {% for num, img in enumerate(trip.images.all()) %}
+      <div class="carousel-item {{ '' if num else 'active'}}">
+        <img src="{{ url_for('static', filename='pictures/'+img.url) }}" style="height: 500px; width: 100%; object-fit: contain; object-position: center;">
       </div>
-      <div class="carousel-item">
-        <img src="https://news-palstek.de/wp-content/uploads/2021/06/SVB_Team_Lorient5-1030x686.jpg" style="height: 500px; width: 100%; object-fit: contain; object-position: center;">
-      </div>
-      <div class="carousel-item">
-        <img src="https://news-palstek.de/wp-content/uploads/2021/06/SVB_Team_Lorient5-1030x686.jpg" style="height: 500px; width: 100%; object-fit: contain; object-position: center;">
-      </div>
+      {% endfor %}
     </div>
   
     <!-- Left and right controls -->
@@ -177,14 +176,14 @@
   </div>
 </div>
 {% if current_user != trip.skipper %}
-<hr>
+<hr class="m-2">
 <div>
-  <h3 data-toggle="collapse" data-target="#contact" class="mb-4">
+  <h3 data-toggle="collapse" data-target="#contact">
     <i class="lni lni-circle-plus"></i>
     <i class="lni lni-circle-minus" style="display:none"></i>
     Contact Skipper
   </h3>
-  <div class="collapse" id="contact">
+  <div class="collapse m-3" id="contact">
     {% if current_user.is_authenticated %}
     <form action="" method="post">
       {{ form.csrf_token() }}
@@ -207,19 +206,5 @@
   </div>
 </div>
 {% endif %}
-
-<script>
-  $(document).ready(function(){
-    $(".collapse").on("show.bs.collapse", function () {
-      $(`h3[data-target='#${this.id}'] .lni-circle-plus`).hide();
-      $(`h3[data-target='#${this.id}'] .lni-circle-minus`).show();
-    });
-
-    $(".collapse").on("hide.bs.collapse", function () {
-      $(`h3[data-target='#${this.id}'] .lni-circle-plus`).show();
-      $(`h3[data-target='#${this.id}'] .lni-circle-minus`).hide();
-    });
-  });
-</script>
 {% endblock %}
 
