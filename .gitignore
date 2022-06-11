@@ -1,5 +1,6 @@
 venv
 .env
+test.py
 __pycache__
 app/__pycache__
 app/database.db

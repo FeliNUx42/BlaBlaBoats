@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from PIL import Image as PImage
 from datetime import datetime
 from .models import Destination, User, Trip, Image
-from .forms import ContactForm, CreateEditTripForm, Place, AddImage, DeleteImage
+from .forms import CreateEditTripForm, MsgAboutForm, Place, AddImage, DeleteImage
 from . import db
 import os
 
@@ -13,7 +13,7 @@ trips = Blueprint("trips", __name__)
 @trips.route("/<uid>")
 def trip_page(uid):
   trip = Trip.query.filter_by(uid=uid).first_or_404()
-  form = ContactForm()
+  form = MsgAboutForm()
 
   destinations = trip.destinations.order_by(Destination.order.asc()).all()
 

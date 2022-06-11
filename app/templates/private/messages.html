@@ -1,0 +1,32 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Messages{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">Messages</h2>
+
+<ul class="nav nav-tabs">
+  <li class="nav-item">
+    <a class="nav-link active" data-toggle="tab" href="#inbox">Inbox</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" data-toggle="tab" href="#sent">Sent</a>
+  </li>
+</ul>
+
+<br>
+  
+<!-- Tab panes -->
+<div class="tab-content">
+  <div class="tab-pane container active p-0" id="inbox">
+    {% include "private/inbox.html" %}
+  </div>
+  <div class="tab-pane container fade p-0" id="sent">
+    {% include "private/sent.html" %}
+  </div>
+
+</div>
+{% endblock %}
+
+

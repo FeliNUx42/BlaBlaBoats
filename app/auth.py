@@ -28,7 +28,7 @@ def signup():
 
     flash("Account created successfully.", "success")
 
-    return redirect(url_for("profile.user_page", uid=user.uid))
+    return redirect(url_for("private.dashboard"))
 
   return render_template("auth/signup.html", form=form)
 

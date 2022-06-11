@@ -148,31 +148,37 @@
     <a href="{{ url_for('trips.pictures', uid=trip.uid) }}" class="btn btn-primary ml-4 btn-sm" target="_blank">Add & Remove Images</a>
     {% endif %}
   </h3>
-  <div class="collapse m-3 carousel slide" data-ride="carousel" id="imgs">
-    <!-- Indicators -->
-    <ul class="carousel-indicators">
-      {% for i in range(trip.images.count()) %}
-      <li data-target="#imgs" data-slide-to="{{ i }}" class="{{ '' if i else 'active' }}"></li>
-      {% endfor %}
-    </ul>
-  
-    <!-- The slideshow -->
-    <div class="carousel-inner bg-dark">
-      {% for num, img in enumerate(trip.images.all()) %}
-      <div class="carousel-item {{ '' if num else 'active'}}">
-        <img src="{{ url_for('static', filename='pictures/'+img.url) }}" style="height: 500px; width: 100%; object-fit: contain; object-position: center;">
+  <div class="collapse" id="imgs">
+    {% if trip.images.count() %}
+    <div class="m-3 carousel slide" data-ride="carousel" id="carousel">
+      <!-- Indicators -->
+      <ul class="carousel-indicators">
+        {% for i in range(trip.images.count()) %}
+        <li data-target="#carousel" data-slide-to="{{ i }}" class="{{ '' if i else 'active' }}"></li>
+        {% endfor %}
+      </ul>
+    
+      <!-- The slideshow -->
+      <div class="carousel-inner bg-dark">
+        {% for num, img in enumerate(trip.images.all()) %}
+        <div class="carousel-item {{ '' if num else 'active'}}">
+          <img src="{{ url_for('static', filename='pictures/'+img.url) }}" style="height: 500px; width: 100%; object-fit: contain; object-position: center;">
+        </div>
+        {% endfor %}
       </div>
-      {% endfor %}
+    
+      <!-- Left and right controls -->
+      <a class="carousel-control-prev" href="#carousel" data-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+      </a>
+      <a class="carousel-control-next" href="#carousel" data-slide="next">
+        <span class="carousel-control-next-icon"></span>
+      </a>
+    
     </div>
-  
-    <!-- Left and right controls -->
-    <a class="carousel-control-prev" href="#imgs" data-slide="prev">
-      <span class="carousel-control-prev-icon"></span>
-    </a>
-    <a class="carousel-control-next" href="#imgs" data-slide="next">
-      <span class="carousel-control-next-icon"></span>
-    </a>
-  
+    {% else %}
+    <i>This trip has no images...</i>
+    {% endif %}
   </div>
 </div>
 {% if current_user != trip.skipper %}
@@ -185,15 +191,16 @@
   </h3>
   <div class="collapse m-3" id="contact">
     {% if current_user.is_authenticated %}
-    <form action="" method="post">
+    <form action="{{ url_for('messages.about') }}" method="post">
       {{ form.csrf_token() }}
+      {{ form.t_uid(value=trip.uid) }}
 
       <div class="form-group">
         <div>{{ form.subject(class="form-control", placeholder="Subject...") }}</div>
       </div>
 
       <div class="form-group">
-        <div>{{ form.content(class="form-control", placeholder="Content...", rows="7") }}</div>
+        <div>{{ form.content(class="form-control", placeholder="Message...", rows="7") }}</div>
       </div>
 
       <div class="form-group">

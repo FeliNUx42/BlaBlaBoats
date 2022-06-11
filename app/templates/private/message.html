@@ -1,0 +1,79 @@
+{% extends "layout/base.html" %}
+
+{% block title %}{{ message.subject }}{% endblock %}
+
+{% block content %}
+
+{% for field, errors in form.errors.items() %}
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ ', '.join(errors) }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+{% endfor %}
+
+<div class="jumbotron pb-4 pt-4 mb-3">
+  <h2 class="card-title">{{ message.subject }}</h2>
+  <hr>
+  <div class="d-flex align-items-center">
+    <h5 class="mb-0">Sender:</h5>
+    <div class="media ml-3 flex-grow-1">
+      <div class="media-body">
+        {% if message.sender == current_user %}
+        <h6 class="mt-2"><a href="{{ url_for('private.dashboard') }}"><i>Me</i></a></h6>
+        {% else %}
+        <h6 class="mt-2"><a href="{{ url_for('profile.user_page', uid=message.sender.uid) }}"><i>{{ message.sender.full_name }} ({{ message.sender.username }})</i></a></h6>
+        {% endif %}
+      </div>
+    </div>
+    <h5 class="mb-0">Receiver:</h5>
+    <div class="media ml-3 flex-grow-1">
+      <div class="media-body">
+        {% if message.receiver == current_user %}
+        <h6 class="mt-2"><a href="{{ url_for('private.dashboard') }}"><i>Me</i></a></h6>
+        {% else %}
+        <h6 class="mt-2"><a href="{{ url_for('profile.user_page', uid=message.receiver.uid) }}"><i>{{ message.receiver.full_name }} ({{ message.receiver.username }})</i></a></h6>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+<h6 class="p-2 pl-3 pr-3 bg-light text-dark mb-3 font-italic rounded">
+  Sent on {{ moment(message.created).format("DD MMM, YYYY") }}
+</h6>
+
+{% if message.trip %}
+<h6 class="p-2 pl-3 pr-3 bg-light text-dark mb-3 rounded">
+  About: <a target="_blank" href="{{ url_for('trips.trip_page', uid=message.trip.uid) }}">{{ message.trip.title }}</a>
+</h6>
+{% elif message.reply %}
+<h6 class="p-2 pl-3 pr-3 bg-light text-dark mb-3 rounded">
+  Reply to: <a target="_blank" href="{{ url_for('messages.msg', uid=message.reply.uid) }}">{{ message.reply.subject }}</a>
+</h6>
+{% endif %}
+
+<p>{{ message.text }}</p>
+
+<hr class="mt-4 mb-4">
+
+<form class="form-horizontal" method="POST" action="{{ url_for('messages.reply') }}">
+
+  <div class="form-group">
+    <h2>Reply</h2>
+  </div>
+
+  {{ form.csrf_token() }}
+  {{ form.r_uid(value=message.uid) }}
+
+  <div class="form-group">
+    <div>{{ form.content(class="form-control", placeholder="Message...", rows="8") }}</div>
+  </div>
+
+  <div class="form-group">
+    <div>{{ form.submit(class="btn btn-primary")}}</div>
+  </div>
+
+</form>
+
+{% endblock %}

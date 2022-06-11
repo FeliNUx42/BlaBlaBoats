@@ -4,17 +4,6 @@
 
 {% block content %}
 
-{% if form %}
-{% for field, errors in form.errors.items() %}
-<div class="alert alert-danger alert-dismissible fade show" role="alert">
-    {{ ', '.join(errors) }}
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-    </button>
-</div>
-{% endfor %}
-{% endif %}
-
 <div class="row">
   <div class="col-md-4">
     <div class="card">
@@ -23,16 +12,46 @@
         <h4 class="card-title">{{ user.username }}</h4>
         <p class="card-text">{{ user.description }}</p>
         {% if current_user == user %}
-        <a href="{{ url_for('profile.settings') }}" class="btn btn-primary btn-block">Edit Profile</a>
+        <a href="{{ url_for('private.settings') }}" class="btn btn-primary btn-block">Edit Profile</a>
+        {% elif current_user.is_authenticated %}
+        <button class="btn btn-primary btn-block" data-toggle="modal" data-target="#contact-form">Contact</button>
         {% else %}
-        <div class="btn-group btn-block">
-          <a href="#" class="btn btn-primary">Contact</a>
-          <a href="#" class="btn btn-primary">Follow</a>
-        </div>
+        <a href="{{ url_for('auth.login', next=url_for('profile.user_page', uid=user.uid)) }}" class="btn btn-primary">Contact</a>
         {% endif %}
       </div>
     </div>
   </div>
+
+  {% if current_user.is_authenticated and current_user != user %}
+  <div class="modal" id="contact-form">
+    <div class="modal-dialog">
+      <form class="modal-content" action="{{ url_for('messages.contact') }}" method="post">
+        {{ form.csrf_token() }}
+        {{ form.u_uid(value=user.uid) }}
+  
+        <div class="modal-header">
+          <h4 class="modal-title">Send Message to <i>{{ user.username }}</i></h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+  
+        <div class="modal-body">
+          <div class="form-group">
+            <div>{{ form.subject(class="form-control", placeholder="Subject...") }}</div>
+          </div>
+          <div class="form-group">
+            <div>{{ form.content(class="form-control", placeholder="Message...", rows="7") }}</div>
+          </div>
+        </div>
+  
+        <div class="modal-footer">
+          {{ form.submit(class="btn btn-primary")}}
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+  
+      </form>
+    </div>
+  </div>
+  {% endif %}
 
   <div class="col-md-8">
     <ul class="nav nav-tabs">
@@ -42,32 +61,24 @@
       <li class="nav-item">
         <a class="nav-link" data-toggle="tab" href="#trips">Planned Trips</a>
       </li>
-      {% if current_user == user %}
       <li class="nav-item">
-        <a class="nav-link" data-toggle="tab" href="#settings">Settings</a>
+        <a class="nav-link" data-toggle="tab" href="#reviews">Reviews</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" data-toggle="tab" href="#inbox">Inbox</a>
-      </li>
-      {% endif %}
     </ul>
 
     <br>
     
     <!-- Tab panes -->
     <div class="tab-content">
-      <div class="tab-pane container active" id="overview">...</div>
+      <div class="tab-pane container active" id="overview">
+        {% include "profile/overview.html" %}
+      </div>
       <div class="tab-pane container fade" id="trips">
         {% include "profile/trips.html" %}
       </div>
-      {% if current_user == user %}
-      <div class="tab-pane container fade" id="settings">
-        {% include "profile/settings.html" %}
+      <div class="tab-pane container fade" id="reviews">
+        {% include "profile/reviews.html" %}
       </div>
-      <div class="tab-pane container fade" id="inbox">
-        {% include "profile/inbox.html" %}
-      </div>
-      {% endif %}
     </div>
   </div>
 </div>

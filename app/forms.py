@@ -1,3 +1,4 @@
+from flask import request
 from flask_login import current_user
 from flask_wtf import FlaskForm
 from wtforms import Form, StringField, TextAreaField, PasswordField, BooleanField, DateField, SelectField, SubmitField, FileField, FieldList, FormField, HiddenField
@@ -6,10 +7,15 @@ from flask_wtf.file import FileRequired, FileAllowed
 from .models import User
 
 
-class Place(Form):
-  place = StringField(label="Stopover", validators=[Length(max=64)])
-  arr_date = DateField(label="Date of arrival", validators=[Optional()])
-  dep_date = DateField(label="Date of departure", validators=[Optional()])
+class SearchForm(FlaskForm):
+  q = StringField("Search", validators=[DataRequired()])
+
+  def __init__(self, *args, **kwargs):
+    if 'formdata' not in kwargs:
+      kwargs['formdata'] = request.args
+    if 'meta' not in kwargs:
+      kwargs['meta'] = {'csrf': False}
+      super(SearchForm, self).__init__(*args, **kwargs)
 
 
 class SignupForm(FlaskForm):
@@ -31,13 +37,11 @@ class SignupForm(FlaskForm):
     if user:
       raise ValidationError("This Email Address is already taken.")
 
-
 class LoginForm(FlaskForm):
   username = StringField(label="Username:", validators=[DataRequired(), Length(4, 128)])
   password = PasswordField("Password:", validators=[DataRequired(), Length(8, 128)])
   remember = BooleanField("Remember me")
   submit = SubmitField("Log In")
-
 
 class SettingsForm(FlaskForm):
   username = StringField(label="Username:", validators=[DataRequired(), Length(4, 128)], default=lambda: current_user.username)
@@ -48,13 +52,16 @@ class SettingsForm(FlaskForm):
   #birthday = DateField("Date of birth:", validators=[Optional()], default=lambda: current_user.birthday)
   submit = SubmitField("Save changes")
 
-
 class ChangePasswordForm(FlaskForm):
   o_password = PasswordField(label="Old Password:", validators=[DataRequired(), Length(8, 128)])
   n_password = PasswordField(label="New Password:", validators=[DataRequired(), Length(8, 128)])
   r_password = PasswordField(label="Repeate New Password:", validators=[DataRequired(), EqualTo("n_password"), Length(8, 128)])
   submit = SubmitField("Change Password")
 
+class Place(Form):
+  place = StringField(label="Stopover", validators=[Length(max=64)])
+  arr_date = DateField(label="Date of arrival", validators=[Optional()])
+  dep_date = DateField(label="Date of departure", validators=[Optional()])
 
 class CreateEditTripForm(FlaskForm):
   title = StringField(label="Title", validators=[DataRequired(), Length(max=72)])
@@ -68,11 +75,22 @@ class CreateEditTripForm(FlaskForm):
   qualif_level = StringField(label="Qualification level required", validators=[DataRequired(), Length(max=64)])
   submit = SubmitField("Create Trip")
 
-
-class ContactForm(FlaskForm):
+class MsgContactForm(FlaskForm):
   subject = StringField(label="Subject", validators=[DataRequired(), Length(max=64)])
   content = TextAreaField(label="Content", validators=[DataRequired(), Length(max=2048)])
-  submit = SubmitField("Send message")
+  u_uid = HiddenField(label="U_UID", validators=[DataRequired(), Length(16, 16)])
+  submit = SubmitField("Send Message")
+
+class MsgAboutForm(FlaskForm):
+  subject = StringField(label="Subject", validators=[DataRequired(), Length(max=64)])
+  content = TextAreaField(label="Content", validators=[DataRequired(), Length(max=2048)])
+  t_uid = HiddenField(label="T_UID", validators=[DataRequired(), Length(16, 16)])
+  submit = SubmitField("Send Message")
+
+class MsgReplyForm(FlaskForm):
+  content = TextAreaField(label="Content", validators=[DataRequired(), Length(max=2048)])
+  r_uid = HiddenField(label="R_UID", validators=[DataRequired(), Length(16, 16)])
+  submit = SubmitField("Send Message")
 
 class AddImage(FlaskForm):
   image = FileField(label="Image", validators=[DataRequired(), FileAllowed(["jpg", "png", "jpeg"], "Only images are accepted!")])

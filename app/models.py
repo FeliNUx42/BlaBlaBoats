@@ -1,5 +1,6 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from app.search import add_to_index, remove_from_index, query_index
 from datetime import datetime, date
 from dateutil import relativedelta
 from flask import current_app
@@ -7,7 +8,51 @@ from flask_login import UserMixin
 from . import db
 
 
-class User(db.Model, UserMixin):
+class SearchableMixin(object):
+  @classmethod
+  def search(cls, expression, **kwargs):
+    data = query_index(cls.__tablename__, expression, **kwargs).body
+    ids = [int(hit["_id"]) for hit in data["hits"]["hits"]]
+    total = data["hits"]["total"]["value"]
+    if not total:
+      return cls.query.filter_by(id=0)
+    when = zip(ids, range(len(ids)))
+    models = cls.query.filter(cls.id.in_(ids)).order_by(db.case(list(when), value=cls.id))
+    return models
+
+  @classmethod
+  def before_commit(cls, session):
+    session._changes = {
+      "add" : list(session.new),
+      "update" : list(session.dirty),
+      "delete" : list(session.deleted)
+    }
+  
+  @classmethod
+  def after_commit(cls, session):
+    for obj in session._changes['add']:
+      if isinstance(obj, SearchableMixin):
+        add_to_index(obj.__tablename__, obj)
+    for obj in session._changes['update']:
+      if isinstance(obj, SearchableMixin):
+        add_to_index(obj.__tablename__, obj)
+    for obj in session._changes['delete']:
+      if isinstance(obj, SearchableMixin):
+        remove_from_index(obj.__tablename__, obj)
+    session._changes = None
+
+  @classmethod
+  def reindex(cls):
+    for obj in cls.query:
+      add_to_index(cls.__tablename__, obj)
+
+
+db.event.listen(db.session, 'before_commit', SearchableMixin.before_commit)
+db.event.listen(db.session, 'after_commit', SearchableMixin.after_commit)
+
+
+class User(db.Model, UserMixin, SearchableMixin):
+  __searchable__ = ["uid", "email", "username", "full_name", "description"]
   id = db.Column(db.Integer, primary_key=True)
   uid = db.Column(db.String(), unique=True)
   email = db.Column(db.String(16), unique=True)
@@ -68,7 +113,8 @@ class User(db.Model, UserMixin):
     return f'<User({self.id}, {self.uid}, {self.username})>'
 
 
-class Trip(db.Model):
+class Trip(db.Model, SearchableMixin):
+  __searchable__ = ["uid", "title", "description"]
   id = db.Column(db.Integer, primary_key=True)
   uid = db.Column(db.String(16), unique=True)
   title = db.Column(db.String(72), unique=True)
@@ -84,6 +130,8 @@ class Trip(db.Model):
   destinations = db.relationship("Destination", backref="trip", lazy="dynamic")
   banner = db.Column(db.String(24), default="default.png")
   images = db.relationship("Image", backref="trip", lazy="dynamic")
+
+  messages = db.relationship("Message", backref="trip", lazy="dynamic")
 
   def __repr__(self):
     return f'<Trip({self.id}, {self.uid}, {self.title})>'
@@ -116,6 +164,10 @@ class Message(db.Model):
   text = db.Column(db.String(2048))
   created = db.Column(db.DateTime(timezone=True), default=datetime.utcnow)
   read = db.Column(db.Boolean, default=False)
+  m_trip_id = db.Column(db.Integer, db.ForeignKey("trip.id"))
+
+  reply_id = db.Column(db.Integer, db.ForeignKey('message.id'))
+  reply = db.relationship('Message', remote_side=[id])
 
   sender_id = db.Column(db.Integer, db.ForeignKey("user.id"))
   receiver_id = db.Column(db.Integer, db.ForeignKey("user.id"))

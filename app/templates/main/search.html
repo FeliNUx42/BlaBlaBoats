@@ -1,0 +1,29 @@
+{% extends "layout/base.html" %}
+
+{% block title %}{{ query }}{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Results for: <i>{{ query }}</i></h2>
+
+<ul class="nav nav-tabs">
+  <li class="nav-item">
+    <a class="nav-link active" data-toggle="tab" href="#trip">Trips ({{ trips.count() }})</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" data-toggle="tab" href="#user">Users ({{ users.count() }})</a>
+  </li>
+</ul>
+
+<br>
+  
+<!-- Tab panes -->
+<div class="tab-content">
+  <div class="tab-pane container active p-0" id="trip">
+    {% include "main/trip_results.html" %}
+  </div>
+  <div class="tab-pane container fade p-0" id="user">
+    {% include "main/user_results.html" %}
+  </div>
+
+</div>
+{% endblock %}

@@ -20,13 +20,24 @@
       background-position: center;
       background-image: url('{{ url_for("static", filename="banner.jpeg")}}');
     }
+
+    .message-card {
+      color: #212529;
+    }
+
+    .message-card:hover {
+      color: #212529;
+      background-color: #e9ecef;
+      text-decoration: none;
+    }
+    
   </style>
 </head>
 <body>
   <div style="min-height: 100vh;">
     {% block banner %}{% endblock %}
 
-    <nav  class="navbar navbar-expand-sm bg-dark navbar-dark sticky-top">
+    <nav  class="navbar navbar-expand-md bg-dark navbar-dark sticky-top">
       <div class="container">
         <a href="{{ url_for('home.index') }}" class="navbar-brand">
           <img src="{{ url_for('static', filename='logo.png') }}" alt="" height="27px" class="mr-2">
@@ -38,7 +49,7 @@
         </button>
     
         <div class="collapse navbar-collapse" id="collapsibleNavbar">
-          <ul class="navbar-nav">
+          <ul class="navbar-nav mr-auto">
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('home.index')}}">Home</a>
             </li>
@@ -53,12 +64,13 @@
               <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
             </li>
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+              <a class="nav-link dropdown-toggle" href="" id="navbardrop" data-toggle="dropdown">
                 {{ current_user.username }}
               </a>
               <div class="dropdown-menu dropdown-menu-dark">
-                <a class="dropdown-item" href="{{ url_for('profile.user_page', uid=current_user.uid) }}">Dashboard</a>
-                <a class="dropdown-item" href="{{ url_for('profile.settings') }}">Settings</a>
+                <a class="dropdown-item" href="{{ url_for('private.dashboard') }}">Dashboard</a>
+                <a class="dropdown-item" href="{{ url_for('private.inbox') }}">Inbox</a>
+                <a class="dropdown-item" href="{{ url_for('private.settings') }}">Settings</a>
                 <a class="dropdown-item" href="{{ url_for('auth.security') }}">Change Password</a>
               </div>
             </li>
@@ -70,7 +82,20 @@
               <a class="nav-link" href="{{ url_for('auth.signup') }}">Sign Up</a>
             </li>
             {% endif %}
+            {#
+            <li class="nav-item">
+              <a href="" class="nav-link"><span class="pt-1 pb-1 pl-2 pr-2 rounded border border-secondary" style="border-width: 2px !important;">Donate</span></a>
+            </li>
+            #}
           </ul>
+          <form class="form-inline my-2 my-lg-0" method="get" action="{{ url_for('home.search') }}">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="lni lni-search-alt"></i></span>
+              </div>
+              {{ g.search_form.q(class="form-control", placeholder="Search", autocomplete="off") }}
+            </div>
+          </form>
         </div>
       </div>
     </nav>
