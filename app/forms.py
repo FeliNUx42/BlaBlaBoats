@@ -1,8 +1,8 @@
 from flask import request
 from flask_login import current_user
 from flask_wtf import FlaskForm
-from wtforms import Form, StringField, TextAreaField, PasswordField, BooleanField, DateField, SelectField, SubmitField, FileField, FieldList, FormField, HiddenField
-from wtforms.validators import ValidationError, DataRequired, Length, Email, EqualTo, Optional
+from wtforms import Form, StringField, TextAreaField, PasswordField, BooleanField, DateField, SelectField, SubmitField, FileField, FieldList, FormField, HiddenField, DecimalField
+from wtforms.validators import ValidationError, DataRequired, Length, Email, EqualTo, Optional, NumberRange
 from flask_wtf.file import FileRequired, FileAllowed
 from .models import User
 
@@ -16,7 +16,6 @@ class SearchForm(FlaskForm):
     if 'meta' not in kwargs:
       kwargs['meta'] = {'csrf': False}
       super(SearchForm, self).__init__(*args, **kwargs)
-
 
 class SignupForm(FlaskForm):
   username = StringField(label="Username:", validators=[DataRequired(), Length(4, 128)])
@@ -99,3 +98,7 @@ class AddImage(FlaskForm):
 class DeleteImage(FlaskForm):
   image = HiddenField(label="Image", validators=[DataRequired()])
   del_submit = SubmitField("Delete this Image")
+
+class DonateForm(FlaskForm):
+  amount = DecimalField(label="Amount", validators=[DataRequired(), NumberRange(1)])
+  submit = SubmitField("Donate")

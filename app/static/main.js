@@ -90,3 +90,16 @@ $("*[max-length]").each(function() {
     $(this).html($(this).html().substr(0, max)+"...")
   }
 });
+
+function select_value(btn) {
+  for (let i = 0; i < btn.parentNode.children.length; i++) {
+    let e = btn.parentNode.children.item(i);
+    e.classList.remove("btn-info");
+    e.classList.add("btn-outline-info");
+  }
+
+  btn.classList.remove("btn-outline-info");
+  btn.classList.add("btn-info");
+
+  document.querySelector("input[type='hidden'][name='amount']").value = btn.getAttribute("value") || btn.value;
+}

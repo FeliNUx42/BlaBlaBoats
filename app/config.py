@@ -12,3 +12,6 @@ class Config:
 
   SQLALCHEMY_TRACK_MODIFICATIONS = False
   ELASTICSEARCH_URL = os.environ.get("ELASTICSEARCH_URL", "http://localhost:9200")
+
+  STRIPE_PUBLIC_KEY = os.environ.get("STRIPE_PUBLIC_KEY")
+  STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")

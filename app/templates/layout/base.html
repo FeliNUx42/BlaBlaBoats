@@ -21,6 +21,13 @@
       background-image: url('{{ url_for("static", filename="banner.jpeg")}}');
     }
 
+    #donate-banner {
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: right;
+      background-image: url('{{ url_for("static", filename="donate.png")}}');
+    }
+
     .message-card {
       color: #212529;
     }
@@ -82,11 +89,9 @@
               <a class="nav-link" href="{{ url_for('auth.signup') }}">Sign Up</a>
             </li>
             {% endif %}
-            {#
             <li class="nav-item">
-              <a href="" class="nav-link"><span class="pt-1 pb-1 pl-2 pr-2 rounded border border-secondary" style="border-width: 2px !important;">Donate</span></a>
+              <a href="{{ url_for('donate.donate_page') }}" class="nav-link"><span class="btn btn-secondary m-0 text-dark d-inline" style="border-width: 2px !important;">Donate</span></a>
             </li>
-            #}
           </ul>
           <form class="form-inline my-2 my-lg-0" method="get" action="{{ url_for('home.search') }}">
             <div class="input-group">

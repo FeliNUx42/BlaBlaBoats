@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_moment import Moment
 from elasticsearch import Elasticsearch
+import stripe
 from .config import Config
 
 
@@ -27,6 +28,9 @@ def create_app():
 
   app.elasticsearch = Elasticsearch(app.config["ELASTICSEARCH_URL"])
 
+  app.stripe = stripe
+  app.stripe.api_key = app.config["STRIPE_SECRET_KEY"]
+
   db.init_app(app)
   db.create_all(app=app)
   login_manager.init_app(app)
@@ -37,6 +41,7 @@ def create_app():
     g.search_form = SearchForm()
 
   from .home import home
+  from .donate import donate
   from .profile import profile
   from .private import private
   from .messages import messages
@@ -45,6 +50,7 @@ def create_app():
   from .errors import errors
 
   app.register_blueprint(home)
+  app.register_blueprint(donate, url_prefix="/donate")
   app.register_blueprint(profile, url_prefix="/user")
   app.register_blueprint(private, url_prefix="/private")
   app.register_blueprint(messages, url_prefix="/message")
