@@ -23,7 +23,7 @@
   </div>
 
   {% if current_user.is_authenticated and current_user != user %}
-  <div class="modal" id="contact-form">
+  <div class="modal fade" id="contact-form">
     <div class="modal-dialog">
       <form class="modal-content" action="{{ url_for('messages.contact') }}" method="post">
         {{ form.csrf_token() }}

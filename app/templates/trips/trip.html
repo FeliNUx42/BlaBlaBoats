@@ -28,7 +28,7 @@
         <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal-{{ trip.uid }}">Delete</button>
       </div>
 
-      <div class="modal" id="modal-{{ trip.uid }}">
+      <div class="modal fade" id="modal-{{ trip.uid }}">
         <div class="modal-dialog">
           <div class="modal-content">
           
@@ -81,12 +81,16 @@
       </thead>
       <tbody>
         {% if destinations %}
-        {% for destination in destinations %}
+        {% for d in destinations %}
         <tr>
-          <td>{{ destination.name }}</td>
-          <td>{{ moment(destination.arrival).format("DD MMM, YYYY") if destination.arrival else "---" }}</td>
-          <td>{{ moment(destination.departure).format("DD MMM, YYYY") if destination.departure else "---" }}</td>
-          <td><button class="btn btn-primary btn-sm">Show on map</button></td>
+          <td>{{ d.name or "---" }}</td>
+          <td>{{ moment(d.arrival).format("DD MMM, YYYY") if d.arrival else "---" }}</td>
+          <td>{{ moment(d.departure).format("DD MMM, YYYY") if d.departure else "---" }}</td>
+          {% if (d.name and d.lat and d.lng) %}
+          <td><button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#map-modal" onclick='loadMap("{{ d.name }}", "{{ d.arr }}", "{{ d.dep }}", {{ d.lat }}, {{ d.lng }})'>Show on map</button></td>
+          {% else %}
+          <td><button class="btn btn-primary btn-sm disabled" disabled>Show on map</button></td>
+          {% endif %}
         </tr>
         {% endfor %}
         {% else %}
@@ -96,6 +100,22 @@
         {% endif %}
       </tbody>
     </table>
+  </div>
+</div>
+<div class="modal fade" id="map-modal">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Modal Heading</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="container" style="height: 50vh;" id="map"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
   </div>
 </div>
 <hr class="m-2">
@@ -213,5 +233,50 @@
   </div>
 </div>
 {% endif %}
-{% endblock %}
+<script src="https://maps.googleapis.com/maps/api/js?key={{ current_app.config['MAPS_API_KEY'] }}&v=weekly"></script>
 
+<script>
+  var labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  var zoom = 8;
+
+  const markers = JSON.parse(`{{ markers | tojson }}`);
+
+  const mapElement = document.querySelector("#map-modal #map");
+  const map = new google.maps.Map(mapElement, {
+    zoom: zoom,
+    center: {lat: 0, lng: 0},
+    mapTypeControl: false,
+    streetViewControl: false,
+    rotateControl: false
+  });
+
+  markers.map((pos, i) => {
+    if (!pos) return;
+    new google.maps.Marker({
+      map: map,
+      position: pos,
+      label: labels[i % labels.length]
+    });
+  });
+
+  let path = new google.maps.Polyline({
+    path: markers.filter(i=>i),
+    geodesic: true,
+    strokeColor: "#FF0000",
+    strokeOpacity: 1.0,
+    strokeWeight: 2,
+  });
+
+  path.setMap(map);
+
+  function loadMap(name, arr, dep, lat, lng) {
+    let title = document.querySelector("#map-modal .modal-title");
+    if (arr!="?") arr = moment(arr).format("DD MMM");
+    if (dep!="?") dep = moment(dep).format("DD MMM");
+    title.innerHTML = name + `${name} (<i>${arr}</i> to <i>${dep}</i>)`;
+
+    map.setCenter({lat:lat,lng:lng})
+    map.setZoom(zoom)
+  }
+</script>
+{% endblock %}

@@ -37,6 +37,13 @@
       background-color: #e9ecef;
       text-decoration: none;
     }
+
+    .text-toggle[aria-expanded=false] .text-expanded {
+      display: none;
+    }
+    .text-toggle[aria-expanded=true] .text-collapsed {
+      display: none;
+    }
     
   </style>
 </head>
@@ -98,7 +105,10 @@
               <div class="input-group-prepend">
                 <span class="input-group-text"><i class="lni lni-search-alt"></i></span>
               </div>
-              {{ g.search_form.q(class="form-control", placeholder="Search", autocomplete="off") }}
+              {{ g.search_form.q(class="form-control", placeholder="Search", autocomplete="off", required=True) }}
+              {{ g.search_form.unit(hidden=True) }}
+              {{ g.search_form.boat_type(hidden=True) }}
+              {{ g.search_form.sailing_mode(hidden=True) }}
             </div>
           </form>
         </div>

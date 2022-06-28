@@ -13,7 +13,7 @@
 </div>
 {% endfor %}
 
-<form class="form-horizontal" method="POST" action="" enctype="multipart/form-data">
+<form class="form-horizontal" method="POST" action="{{ request.url }}" enctype="multipart/form-data">
 
   <div class="form-group">
     <h2>{{ title }}</h2>
@@ -51,7 +51,9 @@
           <div class="input-group-prepend">
             <span class="input-group-text">{{ d.place.label.text }}</span>
           </div>
-          {{ d.place(class="form-control") }}
+          {{ d.place(class="form-control", onfocus="create_autocomplete(this)", placeholder="") }}
+          {{ d.lat(hidden=True) }}
+          {{ d.lng(hidden=True) }}
         </div>
         <div class="input-group">
           <div class="input-group-prepend">
@@ -138,9 +140,11 @@
   </div>
 
   <div class="form-group">
-    <div>{{ form.submit(class="btn btn-primary mt-4")}}</div>
+    <input type="button" class="btn btn-primary mt-4" onclick="$('form').submit()" value="{{ form.submit.label.text }}">
   </div>
 </form>
+
+<script src="https://maps.googleapis.com/maps/api/js?key={{ current_app.config['MAPS_API_KEY'] }}&libraries=places"></script>
 
 <script>
   $(window).bind('beforeunload', function() {
@@ -149,5 +153,44 @@
   $("form").bind('submit', function () {
     $(window).unbind('beforeunload');
   });
+
+  function fill(elem, val) {
+    elem.input.value = val.input;
+    elem.lat.value = val.lat;
+    elem.lng.value = val.lng;
+  }
+
+  function create_autocomplete(i) {
+    if (i.hasAttribute("autosetup")) { return; }
+    i.setAttribute("autosetup", "");
+
+    let autocomplete = new google.maps.places.Autocomplete(i, {types:["(regions)"],fields:["geometry", "formatted_address"]});
+
+    autocomplete.input = i;
+    autocomplete.lat = i.nextElementSibling;
+    autocomplete.lng = autocomplete.lat.nextElementSibling;
+    autocomplete.values = {input:"", lat:"", lng:""};
+
+    autocomplete.addListener("place_changed", () => {
+      let place = autocomplete.getPlace();
+      if (place.geometry) {
+        autocomplete.values = {
+          input: autocomplete.input.value,
+          lat: place.geometry.location.lat(),
+          lng: place.geometry.location.lng()
+        };
+      } else {
+        autocomplete.values = {input:"", lat:"", lng:""};
+      }
+      fill(autocomplete, autocomplete.values);
+    });
+
+    autocomplete.input.addEventListener("focusout", () => {
+      setTimeout(() => {
+        if (autocomplete.input.value == "") autocomplete.values = {input:"", lat:"", lng:""};
+        fill(autocomplete, autocomplete.values)
+      }, 250);
+    });
+  }
 </script>
 {% endblock %}

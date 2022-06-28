@@ -1,24 +1,39 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
-from app.search import add_to_index, remove_from_index, query_index
-from datetime import datetime, date
-from dateutil import relativedelta
-from flask import current_app
+from app.search import add_to_index, remove_from_index
+from datetime import datetime
+from flask import current_app, url_for
 from flask_login import UserMixin
-from . import db
+from . import db, moment
 
 
 class SearchableMixin(object):
   @classmethod
-  def search(cls, expression, **kwargs):
-    data = query_index(cls.__tablename__, expression, **kwargs).body
+  def search(cls, query):
+    data = current_app.elasticsearch.search(index=cls.__tablename__, query=query)
+    data = data.body
+
+    # return data, None
+    
     ids = [int(hit["_id"]) for hit in data["hits"]["hits"]]
-    total = data["hits"]["total"]["value"]
-    if not total:
-      return cls.query.filter_by(id=0)
-    when = zip(ids, range(len(ids)))
-    models = cls.query.filter(cls.id.in_(ids)).order_by(db.case(list(when), value=cls.id))
-    return models
+    try: 
+      d_ids = [[dest["_source"]["id"] for dest in hit["inner_hits"]["destinations"]["hits"]["hits"]] for hit in data["hits"]["hits"]]
+      d_ids = sum(d_ids, [])
+    except:
+      d_ids = None
+
+    if not ids:
+      return cls.query.filter_by(id=0), None
+    
+    ord_ids = list(zip(ids, range(len(ids))))
+    models = cls.query.filter(cls.id.in_(ids)).order_by(db.case(ord_ids, value=cls.id))
+
+    if d_ids:
+      d_models = Destination.query.filter(Destination.id.in_(d_ids))
+    else:
+      d_models = None
+
+    return models, d_models
 
   @classmethod
   def before_commit(cls, session):
@@ -43,6 +58,8 @@ class SearchableMixin(object):
 
   @classmethod
   def reindex(cls):
+    current_app.elasticsearch.options(ignore_status=400)\
+          .indices.create(index=cls.__tablename__, mappings=cls.__mapping__)
     for obj in cls.query:
       add_to_index(cls.__tablename__, obj)
 
@@ -52,7 +69,16 @@ db.event.listen(db.session, 'after_commit', SearchableMixin.after_commit)
 
 
 class User(db.Model, UserMixin, SearchableMixin):
-  __searchable__ = ["uid", "email", "username", "full_name", "description"]
+  __indexing__ = ["uid", "email", "username", "full_name", "description"]
+  __mapping__ = {
+    "properties": {
+      "uid": {"type": "text"},
+      "email": {"type": "text"},
+      "username": {"type": "text"},
+      "full_name": {"type": "text"},
+      "description": {"type": "text"}
+    }
+  }
   id = db.Column(db.Integer, primary_key=True)
   uid = db.Column(db.String(), unique=True)
   email = db.Column(db.String(16), unique=True)
@@ -113,8 +139,77 @@ class User(db.Model, UserMixin, SearchableMixin):
     return f'<User({self.id}, {self.uid}, {self.username})>'
 
 
+class Destination(db.Model):
+  __mapping__ = {
+    "type": "nested",
+    "properties": {
+      "id": {"type": "integer"},
+      "name": {"type": "text"},
+      "location": {"type": "geo_point"},
+      "arrival": {"type": "date"},
+      "departure": {"type": "date"}
+    }
+  }
+  id = db.Column(db.Integer, primary_key=True)
+  order = db.Column(db.Integer)
+  name = db.Column(db.String(1024))
+  lat = db.Column(db.Float)
+  lng = db.Column(db.Float)
+  arrival = db.Column(db.Date)
+  departure = db.Column(db.Date)
+
+  d_trip_id = db.Column(db.Integer, db.ForeignKey("trip.id"))
+
+  @property
+  def arr(self):
+    if not self.arrival:
+      return "?"
+    return self.arrival.isoformat()
+  
+  @property
+  def dep(self):
+    if not self.departure:
+      return "?"
+    return self.departure.isoformat()
+  
+  def to_elastic(self):
+    return {
+      "id": self.id,
+      "name": self.name,
+      "location": {"lat": self.lat, "lon": self.lng} if (self.lat and self.lng) else None,
+      "arrival": self.arrival and self.arrival.isoformat(),
+      "departure": self.departure and self.departure.isoformat()
+    }
+  
+  def to_json(self):
+    return {
+      "name": self.name,
+      "location": {"lat": self.lat, "lng": self.lng} if (self.lat and self.lng) else None,
+      "arrival": self.arrival and self.arrival.isoformat(),
+      "departure": self.departure and self.departure.isoformat(),
+      "trip_title": self.trip.title,
+      "trip_url": url_for("trips.trip_page", uid=self.trip.uid)
+    }
+
+  def __repr__(self):
+    return f'<Destination({self.id}, {self.name})>'
+
+
 class Trip(db.Model, SearchableMixin):
-  __searchable__ = ["uid", "title", "description"]
+  __indexing__ = ["uid", "title", "description", "boat_type", "boat_model", "sailing_mode", "created", "destinations"]
+  __searchable__ = ["uid", "title", "description", "boat_model"]
+  __mapping__ = {
+    "properties": {
+      "uid": {"type": "text"},
+      "title": {"type": "text"},
+      "description": {"type": "text"},
+      "boat_type": {"type": "keyword"},
+      "boat_model": {"type": "text"},
+      "sailing_mode": {"type": "keyword"},
+      "created": {"type": "date"},
+      "destinations": Destination.__mapping__
+    }
+  }
   id = db.Column(db.Integer, primary_key=True)
   uid = db.Column(db.String(16), unique=True)
   title = db.Column(db.String(72), unique=True)
@@ -135,19 +230,6 @@ class Trip(db.Model, SearchableMixin):
 
   def __repr__(self):
     return f'<Trip({self.id}, {self.uid}, {self.title})>'
-
-
-class Destination(db.Model):
-  id = db.Column(db.Integer, primary_key=True)
-  order = db.Column(db.Integer)
-  name = db.Column(db.String(128))
-  arrival = db.Column(db.Date)
-  departure = db.Column(db.Date)
-
-  d_trip_id = db.Column(db.Integer, db.ForeignKey("trip.id"))
-
-  def __repr__(self):
-    return f'<Destination({self.id}, {self.name})>'
 
 
 class Image(db.Model):

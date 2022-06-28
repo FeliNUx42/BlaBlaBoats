@@ -1,16 +1,120 @@
 {% extends "layout/base.html" %}
 
-{% block title %}{{ query }}{% endblock %}
+{% block title %}Search{% endblock %}
 
 {% block content %}
-<h2 class="mb-4">Results for: <i>{{ query }}</i></h2>
+<form class="jumbotron pb-4 pt-4 mb-4" action="" method="get">
+  <div class="input-group">
+    {{ form.q(class="form-control", placeholder="Search for trips, users... (leave empty too get all results)", autocomplete="off") }}
+    <div class="input-group-append">
+      <button class="btn btn-info text-toggle" type="button" data-toggle="collapse" data-target="#filters" style="border-right: 4px solid #343a40;"  aria-expanded="false">
+        <span class="text-collapsed">Show filters</span>
+        <span class="text-expanded">Hide filters</span>
+      </button>
+      <button class="btn btn-primary" type="submit">Search</button>
+    </div>
+  </div>
+  <div id="filters" class="collapse">
+    <div class="input-group mb-3 mt-4">
+      <div class="input-group-prepend">
+        <span class="input-group-text">Location</span>
+      </div>
+      <button class="form-control" type="button" id="map-btn" data-toggle="modal" data-target="#map-modal" onclick="openMap()" style="width:auto; flex-grow: 3;">lat: {{ form.lat.data or "-" }}, lng: {{ form.lng.data or "-" }}</button>
+      {{ form.lat(hidden=True) }}
+      {{ form.lng(hidden=True) }}
+      <div class="input-group-append input-group-prepend">
+        <span class="input-group-text">{{ form.dist.label.text }}</span>
+      </div>
+      {{ form.dist(class="form-control", placeholder="i.e. 150") }}
+      {{ form.unit(class="custom-select") }}
+      <div class="input-group-append">
+        <button class="btn btn-info" type="button" onclick="clearMap()">Reset</button>
+      </div>
+    </div>
+    <div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <span class="input-group-text">Stopover between</span>
+      </div>
+      {{ form.start_date(class="form-control") }}
+      <div class="input-group-append input-group-prepend">
+        <span class="input-group-text">and</span>
+      </div>
+      {{ form.end_date(class="form-control") }}
+      <div class="input-group-append">
+        <button class="btn btn-info" type="button" onclick="clearDate()">Reset</button>
+      </div>
+    </div>
+    <div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <span class="input-group-text">{{ form.boat_type.label.text }}</span>
+      </div>
+      {{ form.boat_type(class="custom-select")}}
+      <div class="input-group-append input-group-prepend">
+        <span class="input-group-text">{{ form.sailing_mode.label.text }}</span>
+      </div>
+      {{ form.sailing_mode(class="custom-select") }}
+      <div class="input-group-append">
+        <button class="btn btn-info" type="button" onclick="clearType()">Reset</button>
+      </div>
+    </div>
+    <div class="input-group">
+      <div class="input-group-prepend">
+        <span class="input-group-text">{{ form.sort_by.label.text }}</span>
+      </div>
+      {{ form.sort_by(class="custom-select")}}
+      <div class="input-group-append input-group-prepend">
+        <span class="input-group-text">{{ form.results_per_page.label.text }}</span>
+      </div>
+      {{ form.results_per_page(class="form-control") }}
+    </div>
+  </div>
+</form>
 
+<div class="modal fade" id="map-modal">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Choose boundaries</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="container" style="height: 50vh;" id="map"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="setBoundaries()">Set</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="results-modal">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Results</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="container" style="height: 50vh;" id="results"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if (trips and users) %}
 <ul class="nav nav-tabs">
   <li class="nav-item">
     <a class="nav-link active" data-toggle="tab" href="#trip">Trips ({{ trips.count() }})</a>
   </li>
   <li class="nav-item">
     <a class="nav-link" data-toggle="tab" href="#user">Users ({{ users.count() }})</a>
+  </li>
+  <li class="nav-item flex-grow-1">
+    <button class="btn btn-info float-right" type="button" data-toggle="modal" data-target="#results-modal" onclick="showResults()">Show Results on Map</button>
   </li>
 </ul>
 
@@ -24,6 +128,197 @@
   <div class="tab-pane container fade p-0" id="user">
     {% include "main/user_results.html" %}
   </div>
-
 </div>
+
+{% endif %}
+
+<script src="https://maps.googleapis.com/maps/api/js?key={{ current_app.config['MAPS_API_KEY'] }}&v=weekly"></script>
+
+<script>
+  var map;
+  var result_map;
+  var latlngbounds;
+  var circle;
+  var zoom = 6;
+
+  const dest = JSON.parse(`{{ dest | tojson }}`);
+  const trips = JSON.parse(`{{ trips_id | tojson }}`);
+
+  function showResults() {
+    if (result_map) return;
+
+    let mapElement = document.querySelector("#results");
+    result_map = new google.maps.Map(mapElement, {
+      zoom: 8,
+      center: {lat: 50, lng: 0},
+      mapTypeControl: false,
+      streetViewControl: false,
+      rotateControl: false
+    });
+    
+    let infoWindow = new google.maps.InfoWindow();
+    latlngbounds = new google.maps.LatLngBounds();
+
+    if (dest.filtered) {
+      dest.dest.map((d) => {
+        let m = new google.maps.Marker({
+          map: result_map,
+          position: d.location,
+          title: `${trips[d.trip_title]}: <a href="${d.trip_url}">${d.trip_title}</a>`,
+          label: trips[d.trip_title],
+          optimized: false
+        });
+        m.addListener("click", () => {
+          infoWindow.close();
+          infoWindow.setContent(m.getTitle());
+          infoWindow.open(m.getMap(), m);
+        });
+      });
+
+      for (let i = 0; i < dest.dest.length; i++) {
+        const d = dest.dest[i];
+        latlngbounds.extend(d.location);
+      }
+    } else {
+      dest.dest.map((t) => {
+        t.map((d) => {
+          if (!d.location) return;
+          let m = new google.maps.Marker({
+            map: result_map,
+            position: d.location,
+            title: `${trips[d.trip_title]}: <a href="${d.trip_url}">${d.trip_title}</a>`,
+            label: trips[d.trip_title],
+            optimized: false
+          });
+          m.addListener("click", () => {
+            infoWindow.close();
+            infoWindow.setContent(m.getTitle());
+            infoWindow.open(m.getMap(), m);
+          });
+        });
+        console.log(t.map(i=>i.location).filter(i=>i));
+        let path = new google.maps.Polyline({
+          path: t.map(i=>i.location).filter(i=>i),
+          geodesic: true,
+          strokeColor: "#FF0000",
+          strokeOpacity: 1.0,
+          strokeWeight: 2,
+        });
+
+        path.setMap(result_map);
+      });
+    }
+    
+    setTimeout(() => {
+      result_map.fitBounds(latlngbounds);
+      result_map.setCenter(latlngbounds.getCenter());
+    }, 300);
+  }
+
+  function clearMap() {
+    let lat = document.querySelector("input#lat");
+    let lng = document.querySelector("input#lng");
+    let dist = document.querySelector("input#dist");
+    let unit = document.querySelector("select#unit");
+    let btn = document.querySelector("button#map-btn");
+
+    lat.value = "";
+    lng.value = "";
+    dist.value= "";
+    unit.value = "km";
+    btn.innerHTML = "lat: -, lng: -";
+  }
+
+  function clearDate() {
+    let start_date = document.querySelector("input#start_date");
+    let end_date = document.querySelector("input#end_date");
+
+    start_date.value = "";
+    end_date.value = "";
+  }
+
+  function clearType() {
+    let boat_type = document.querySelector("select#boat_type");
+    let sailing_mode = document.querySelector("select#sailing_mode");
+
+    boat_type.value = "All";
+    sailing_mode.value = "All";
+  }
+
+  function openMap() {
+    if (!map) {
+      navigator.geolocation.getCurrentPosition(centerMap)
+      let mapElement = document.querySelector("#map-modal #map");
+      map = new google.maps.Map(mapElement, {
+        zoom: zoom,
+        center: {lat: 50, lng: 0},
+        mapTypeControl: false,
+        streetViewControl: false,
+        rotateControl: false
+      });
+    }
+    if (!circle) {
+      circle = new google.maps.Circle({
+        strokeColor: "#343a40",
+        strokeOpacity: 0.8,
+        strokeWeight: 1,
+        fillColor: "#343a40",
+        fillOpacity: 0.3,
+        map,
+        center: {lat: map.center.lat(), lng: map.center.lng()},
+        radius: 150*1000,
+        editable: true,
+        draggable: true
+      });
+
+      circle.addListener("bounds_changed", () => {
+        if (circle.radius > 3000*1000) circle.setRadius(3000*1000)
+      });
+    } 
+    
+    let dist = document.querySelector("input#dist");
+    let unit = document.querySelector("select#unit");
+    let r = 0;
+
+    if (unit.value == "km") {r = Number(dist.value) * 1000}
+    if (unit.value == "mi") {r = Number(dist.value) * 1609.344}
+    if (unit.value == "nmi") {r = Number(dist.value) * 1852}
+
+    if (r) circle.setRadius(r)
+  }
+
+  function centerMap(location) {
+    pos = {
+      lat: location.coords.latitude,
+      lng: location.coords.longitude
+    }
+
+    map.setCenter(pos);
+    circle.setCenter(pos);
+  }
+
+  function setBoundaries() {
+    let lat = document.querySelector("input#lat");
+    let lng = document.querySelector("input#lng");
+    let dist = document.querySelector("input#dist");
+    let unit = document.querySelector("select#unit");
+    let btn = document.querySelector("button#map-btn");
+
+    let r = circle.getRadius();
+    if (unit.value == "km") {r /= 1000 }
+    if (unit.value == "mi") {r /= 1609.344 }
+    if (unit.value == "nmi") {r /= 1852 }
+
+    dist.value = r.toFixed();
+
+    let pos = {
+      lat: circle.center.lat(),
+      lng: circle.center.lng()
+    }
+    lat.value = pos.lat;
+    lng.value = pos.lng;
+
+    btn.innerHTML = `lat: ${pos.lat.toFixed(2)}, lng: ${pos.lng.toFixed(2)}`;
+  }
+</script>
 {% endblock %}

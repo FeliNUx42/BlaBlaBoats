@@ -3,15 +3,12 @@ from flask import current_app
 
 def add_to_index(index, model):
   payload = {}
-  for field in model.__searchable__:
-    payload[field] = getattr(model, field)
+  for field in model.__indexing__:
+    val = getattr(model, field)
+    if hasattr(val, "all"):
+      val = [d.to_elastic() for d in val.all()]
+    payload[field] = val
   current_app.elasticsearch.index(index=index, id=model.id, document=payload)
 
 def remove_from_index(index, model):
   current_app.elasticsearch.delete(index=index, id=model.id)
-
-def query_index(index, query):
-  return current_app.elasticsearch.search(
-    index=index,
-    query={"multi_match":{"query":query, "fields":["*"], "fuzziness":"AUTO:3,6"}}
-  )

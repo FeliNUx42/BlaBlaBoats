@@ -1,4 +1,4 @@
-from flask import Blueprint, abort, current_app, render_template, redirect, request, url_for, flash, request
+from flask import Blueprint, abort, current_app, jsonify, render_template, redirect, request, url_for, flash, request
 from flask_login import login_required, current_user
 from PIL import Image as PImage
 from datetime import datetime
@@ -16,9 +16,9 @@ def trip_page(uid):
   form = MsgAboutForm()
 
   destinations = trip.destinations.order_by(Destination.order.asc()).all()
+  markers = [{"lat":d.lat, "lng":d.lng} if (d.lat and d.lng) else None for d in destinations]
 
-  return render_template("trips/trip.html", trip=trip, destinations=destinations, form=form, enumerate=enumerate)
-   
+  return render_template("trips/trip.html", trip=trip, destinations=destinations, markers=markers, form=form, enumerate=enumerate, current_app=current_app)
 
 @trips.route("/<uid>/edit", methods=["GET", "POST"])
 @login_required
@@ -56,6 +56,8 @@ def edit(uid):
     for i, d in enumerate(form.dest.data):
       dest = Destination()
       dest.name = d["place"]
+      dest.lat = d["lat"]
+      dest.lng = d["lng"]
       dest.order = i
       dest.arrival = d["arr_date"]
       dest.departure = d["dep_date"]
@@ -84,6 +86,8 @@ def edit(uid):
   for i, d in enumerate(trip.destinations.order_by(Destination.order.asc()).all()):
     entry = Place()
     entry.place = d.name
+    entry.lat = d.lat
+    entry.lng = d.lng
     entry.arr_date = d.arrival
     entry.dep_date = d.departure
     form.dest.append_entry(entry)
@@ -93,7 +97,7 @@ def edit(uid):
     elif i == len(form.dest) - 1: d.place.label.text = "Arrival"
     else: d.place.label.text = f"Stopover {i}"
 
-  return render_template("trips/create_edit.html", form=form, title="Edit Trip", enumerate=enumerate, len=len, trip=trip)
+  return render_template("trips/create_edit.html", form=form, title="Edit Trip", enumerate=enumerate, len=len, trip=trip, current_app=current_app)
 
 
 @trips.route("/create", methods=["GET", "POST"])
@@ -127,6 +131,8 @@ def create():
     for i, d in enumerate(form.dest.data):
       dest = Destination()
       dest.name = d["place"]
+      dest.lat = d["lat"]
+      dest.lng = d["lng"]
       dest.order = i
       dest.arrival = d["arr_date"]
       dest.departure = d["dep_date"]
@@ -145,7 +151,7 @@ def create():
     elif i == len(form.dest) - 1: d.place.label.text = "Arrival"
     else: d.place.label.text = f"Stopover {i}"
 
-  return render_template("trips/create_edit.html", form=form, title="Create new Trip", enumerate=enumerate, len=len)
+  return render_template("trips/create_edit.html", form=form, title="Create new Trip", enumerate=enumerate, len=len, current_app=current_app)
 
 
 @trips.route("/<uid>/delete") # exploit: csrf
