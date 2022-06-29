@@ -9,29 +9,31 @@ from . import db
 
 class SearchableMixin(object):
   @classmethod
-  def search(cls, query):
+  def search(cls, query, dest=False):
     data = current_app.elasticsearch.search(index=cls.__tablename__, query=query)
     data = data.body
     
     ids = [int(hit["_id"]) for hit in data["hits"]["hits"]]
-    try: 
-      d_ids = [[dest["_source"]["id"] for dest in hit["inner_hits"]["destinations"]["hits"]["hits"]] for hit in data["hits"]["hits"]]
-      d_ids = sum(d_ids, [])
-    except:
-      d_ids = None
+    d_ids = None
+
+    if dest:
+      try: 
+        d_ids = [[dest["_source"]["id"] for dest in hit["inner_hits"]["destinations"]["hits"]["hits"]] for hit in data["hits"]["hits"]]
+        d_ids = sum(d_ids, [])
+      except: pass
 
     if not ids:
-      return cls.query.filter_by(id=0), None
+      if dest: return cls.query.filter_by(id=0), None
+      return cls.query.filter_by(id=0)
     
     ord_ids = list(zip(ids, range(len(ids))))
     models = cls.query.filter(cls.id.in_(ids)).order_by(db.case(ord_ids, value=cls.id))
 
-    if d_ids:
-      d_models = Destination.query.filter(Destination.id.in_(d_ids))
-    else:
-      d_models = None
+    if d_ids: d_models = Destination.query.filter(Destination.id.in_(d_ids))
+    else: d_models = None
 
-    return models, d_models
+    if dest: return models, d_models
+    return models
 
   @classmethod
   def before_commit(cls, session):
@@ -223,7 +225,19 @@ class Image(db.Model):
   i_trip_id = db.Column(db.Integer, db.ForeignKey("trip.id"))
 
 
-class Message(db.Model):
+class Message(db.Model, SearchableMixin):
+  __indexing__ = [
+    "uid", "subject", "text",
+    "trip_title", "trip_uid",
+    "reply_title", "reply_uid",
+    "sender.username", "sender.full_name", "sender.uid",
+    "receiver.username", "receiver.full_name", "receiver.uid",
+  ]
+  __mapping__ = {
+    "properties": {
+      index: {"type": "text"} for index in __indexing__
+    }
+  }
   id = db.Column(db.Integer, primary_key=True)
   uid = db.Column(db.String(16), unique=True)
   subject = db.Column(db.String(64))
@@ -237,3 +251,15 @@ class Message(db.Model):
 
   sender_id = db.Column(db.Integer, db.ForeignKey("user.id"))
   receiver_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+
+  @property
+  def trip_title(self): return self.trip.title if self.trip else None
+  
+  @property
+  def trip_uid(self): return self.trip.uid if self.trip else None
+  
+  @property
+  def reply_title(self): return self.reply.subject if self.reply else None
+  
+  @property
+  def reply_uid(self): return self.reply.uid if self.reply else None

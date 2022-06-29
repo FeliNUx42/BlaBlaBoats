@@ -4,15 +4,29 @@
 
 {% block content %}
 
+{% if form.validate() %}
+<h2 class="mb-4">Results for: <i>{{ form.q.data }}</i> <a href="{{ url_for('private.inbox') }}" class="small ml-3">(back to all messages)</a></h2>
+{% else %}
 <h2 class="mb-4">Messages</h2>
+{% endif %}
 
 <ul class="nav nav-tabs">
   <li class="nav-item">
-    <a class="nav-link active" data-toggle="tab" href="#inbox">Inbox</a>
+    <a class="nav-link active" data-toggle="tab" href="#inbox">Inbox ({{ i_messages.count() if form.validate() else i_messages.filter_by(read=False).count() }})</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" data-toggle="tab" href="#sent">Sent</a>
+    <a class="nav-link" data-toggle="tab" href="#sent">Sent ({{ s_messages.count() if form.validate() else s_messages.filter_by(read=False).count() }})</a>
   </li>
+  <li class="nav-item flex-grow-1">
+    <form class="float-right" action="" method="get">
+      <div class="input-group">
+        {{ form.q(class="form-control", placeholder=form.q.label.text, autocomplete="off") }}
+        <div class="input-group-append">
+          <button class="btn btn-primary" type="submit"><i class="lni lni-search-alt font-weight-bolder"></i></button>
+        </div>
+      </div>
+  </form>
+</li>
 </ul>
 
 <br>

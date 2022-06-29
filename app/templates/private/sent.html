@@ -1,6 +1,6 @@
-{% if s_messages %}
+{% if s_messages.count() %}
 <ul class="list-group">
-  {% for message in s_messages %}
+  {% for message in s_messages.all() %}
   <li class="card mb-3">
     <a href="{{ url_for('messages.msg', uid=message.uid) }}" class="card-body message-card">
       <div class="d-flex justify-content-between align-items-center">

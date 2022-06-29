@@ -16,6 +16,10 @@ def msg(uid):
 
   if not current_user in (message.sender, message.receiver):
     abort(403)
+  
+  if current_user == message.receiver:
+    message.read = True
+    db.session.commit()
 
   return render_template("private/message.html", message=message, form=form)
 

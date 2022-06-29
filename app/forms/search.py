@@ -23,3 +23,14 @@ class SearchForm(FlaskForm):
     if 'meta' not in kwargs:
       kwargs['meta'] = {'csrf': False}
       super(SearchForm, self).__init__(*args, **kwargs)
+
+
+class MsgSearchForm(FlaskForm):
+  q = StringField(label="Search for messages...", validators=[DataRequired()])
+
+  def __init__(self, *args, **kwargs):
+    if 'formdata' not in kwargs:
+      kwargs['formdata'] = request.args
+    if 'meta' not in kwargs:
+      kwargs['meta'] = {'csrf': False}
+      super(MsgSearchForm, self).__init__(*args, **kwargs)

@@ -91,8 +91,8 @@ def search():
         }
       })
 
-    trips, dest = Trip.search(t_query)
-    users, _ = User.search(u_query)
+    trips, dest = Trip.search(t_query, dest=True)
+    users = User.search(u_query)
 
     filtered = bool(dest)
 

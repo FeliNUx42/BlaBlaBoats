@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash
 from flask_login import login_required, current_user
 from .models import Message
 from .forms.private import SettingsForm
+from .forms.search import MsgSearchForm
 from .tools import save_picture, remove_picture
 from . import db
 import os
@@ -48,7 +49,22 @@ def settings():
 @private.route("/inbox")
 @login_required
 def inbox():
-  i_messages = current_user.msg_received.order_by(Message.created.desc()).all()
-  s_messages = current_user.msg_sent.order_by(Message.created.desc()).all()
+  form = MsgSearchForm()
 
-  return render_template("private/messages.html", i_messages=i_messages, s_messages=s_messages)
+  if form.validate():
+    i_fields = [field for field in Message.__indexing__ if not "receiver" in field]
+    s_fields = [field for field in Message.__indexing__ if not "sender" in field]
+
+    i_query = {"multi_match":{"query":form.q.data, "fields":i_fields, "fuzziness":"AUTO:3,6"}}
+    s_query = {"multi_match":{"query":form.q.data, "fields":s_fields, "fuzziness":"AUTO:3,6"}}
+
+    i_messages = Message.search(i_query)
+    s_messages = Message.search(s_query)
+
+    i_messages = i_messages.filter_by(receiver_id=current_user.id).order_by(Message.created.desc())
+    s_messages = s_messages.filter_by(sender_id=current_user.id).order_by(Message.created.desc())
+  else:
+    i_messages = current_user.msg_received.order_by(Message.created.desc())
+    s_messages = current_user.msg_sent.order_by(Message.created.desc())
+
+  return render_template("private/messages.html", i_messages=i_messages, s_messages=s_messages, form=form)
