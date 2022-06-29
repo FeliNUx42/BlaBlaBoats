@@ -1,0 +1,30 @@
+#home-banner {
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  background-image: url('/static/banner.jpg');
+}
+
+#donate-banner {
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: right;
+  background-image: url('/static/donate.png');
+}
+
+.message-card {
+  color: #212529;
+}
+
+.message-card:hover {
+  color: #212529;
+  background-color: #e9ecef;
+  text-decoration: none;
+}
+
+.text-toggle[aria-expanded=false] .text-expanded {
+  display: none;
+}
+.text-toggle[aria-expanded=true] .text-collapsed {
+  display: none;
+}

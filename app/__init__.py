@@ -1,4 +1,4 @@
-from flask import Flask, g
+from flask import Flask, current_app, g
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_moment import Moment
@@ -21,7 +21,7 @@ def load_user(id):
 
 def create_app():
   from .models import User, Trip, Destination, Image, Message
-  from .forms import SearchForm
+  from .forms.search import SearchForm
   app = Flask(__name__)
 
   app.config.from_object(Config)
@@ -36,9 +36,16 @@ def create_app():
   login_manager.init_app(app)
   moment.init_app(app)
 
-  @app.before_request
-  def before_request():
-    g.search_form = SearchForm()
+  @app.context_processor
+  def globals():
+    return {
+      "search_form": SearchForm(),
+      "Trip": Trip,
+      "enumerate": enumerate,
+      "len": len,
+      "current_app": current_app
+    }
+
 
   from .home import home
   from .donate import donate

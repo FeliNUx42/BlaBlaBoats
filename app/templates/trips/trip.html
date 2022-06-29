@@ -5,7 +5,7 @@
 {% block content%}
 <div class="jumbotron p-5">
   <div class="d-lg-flex justify-content-between" style="gap: 30px; justify-content: stretch;">
-    <div class="flex-grow-1"  style="width:100%;">
+    <div class="flex-grow-1" style="width:100%;">
       <h2>{{ trip.title }}</h2>
       <hr>
       <table class="table table-bordered">
@@ -15,7 +15,8 @@
         </tr>
         <tr>
           <th>Skipper</th>
-          <td>{{ trip.skipper.full_name }} &nbsp;<a href="{{ url_for('profile.user_page', uid=trip.skipper.uid) }}">(more Infos)</a></td>
+          <td>{{ trip.skipper.full_name }} &nbsp;<a
+              href="{{ url_for('profile.user_page', uid=trip.skipper.uid) }}">(more Infos)</a></td>
         </tr>
         <tr>
           <th>Sailing Mode</th>
@@ -25,258 +26,227 @@
       {% if trip.skipper == current_user %}
       <div class="btn-group" style="width:100%">
         <a href="{{ url_for('trips.edit', uid=trip.uid) }}" class="btn btn-primary">Edit</a>
-        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal-{{ trip.uid }}">Delete</button>
+        <button type="button" class="btn btn-danger" data-toggle="modal"
+          data-target="#modal-{{ trip.uid }}">Delete</button>
       </div>
 
       <div class="modal fade" id="modal-{{ trip.uid }}">
         <div class="modal-dialog">
           <div class="modal-content">
-          
+
             <div class="modal-header">
               <h5 class="modal-title">Do you really want to delete this trip?</h5>
               <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
 
-            <div class="modal-footer">
-              <a href="{{ url_for('trips.delete', uid=trip.uid) }}" class="btn btn-danger">Yes</a>
+            <form class="modal-footer" method="post" action="{{ url_for('trips.delete', uid=trip.uid) }}">
+              {{ del_form.csrf_token() }}
+              {{ del_form.submit(class="btn btn-danger") }}
               <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
-            </div>
-            
+            </form>
+
           </div>
         </div>
       </div>
-      
       {% endif %}
     </div>
     <div class="flex-grow-1" style="width:100%; height: 275px;">
-      <img src="{{ url_for('static', filename='pictures/'+trip.banner) }}" style="width: 100%; height: 100%; object-fit: contain; object-position: center;">
-  </div>
+      <img src="{{ url_for('static', filename='pictures/'+trip.banner) }}"
+        style="width: 100%; height: 100%; object-fit: contain; object-position: center;">
+    </div>
   </div>
 </div>
 
-<div>
-  <h3 data-toggle="collapse" data-target="#desc">
-    <i class="lni lni-circle-plus" style="display:none"></i>
-    <i class="lni lni-circle-minus"></i>
-    Description
-  </h3>
-  <div class="collapse show m-3" id="desc">{{ trip.description }}</div>
-</div>
-<hr class="m-2">
-<div>
-  <h3 data-toggle="collapse" data-target="#dest">
-    <i class="lni lni-circle-plus"></i>
-    <i class="lni lni-circle-minus"  style="display:none"></i>
-    Destinations
-  </h3>
-  <div class="collapse m-3" id="dest">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Destination</th>
-          <th>Time of Arrival</th>
-          <th>Time of Departure</th>
-          <th>View on Map</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% if destinations %}
-        {% for d in destinations %}
-        <tr>
-          <td>{{ d.name or "---" }}</td>
-          <td>{{ moment(d.arrival).format("DD MMM, YYYY") if d.arrival else "---" }}</td>
-          <td>{{ moment(d.departure).format("DD MMM, YYYY") if d.departure else "---" }}</td>
-          {% if (d.name and d.lat and d.lng) %}
-          <td><button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#map-modal" onclick='loadMap("{{ d.name }}", "{{ d.arr }}", "{{ d.dep }}", {{ d.lat }}, {{ d.lng }})'>Show on map</button></td>
+<div id="accordion">
+  <div>
+    <h3 class="text-toggle" data-toggle="collapse" data-target="#desc" aria-expanded="true">
+      <i class="lni lni-circle-plus text-collapsed"></i>
+      <i class="lni lni-circle-minus text-expanded"></i>
+      Description
+    </h3>
+    <div class="collapse show m-3" id="desc" data-parent="#accordion">{{ trip.description }}</div>
+  </div>
+  <hr class="m-2">
+  <div>
+    <h3 class="text-toggle" data-toggle="collapse" data-target="#dest" aria-expanded="false">
+      <i class="lni lni-circle-plus text-collapsed"></i>
+      <i class="lni lni-circle-minus text-expanded"></i>
+      Destinations
+    </h3>
+    <div class="collapse m-3" id="dest" data-parent="#accordion">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Destination</th>
+            <th>Time of Arrival</th>
+            <th>Time of Departure</th>
+            <th>View on Map</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if dest %}
+          {% for num, d in enumerate(dest) %}
+          <tr>
+            <td>{{ d.name or "---" }}</td>
+            <td>{{ moment(d.arrival).format("DD MMM, YYYY") if d.arrival else "---" }}</td>
+            <td>{{ moment(d.departure).format("DD MMM, YYYY") if d.departure else "---" }}</td>
+            {% if (d.name and d.lat and d.lng) %}
+            <td><button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#map-modal"
+                onclick='loadMap(index="{{ num }}")'>Show on
+                map</button></td>
+            {% else %}
+            <td><button class="btn btn-primary btn-sm disabled" disabled>Show on map</button></td>
+            {% endif %}
+          </tr>
+          {% endfor %}
           {% else %}
-          <td><button class="btn btn-primary btn-sm disabled" disabled>Show on map</button></td>
+          <tr>
+            <td colspan="4" class="text-center"><b>No destinations yet.</b></td>
+          </tr>
           {% endif %}
-        </tr>
-        {% endfor %}
-        {% else %}
-        <tr>
-          <td colspan="4" class="text-center"><b>No destinations yet.</b></td>
-        </tr>
-        {% endif %}
-      </tbody>
-    </table>
-  </div>
-</div>
-<div class="modal fade" id="map-modal">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title">Modal Heading</h4>
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div class="container" style="height: 50vh;" id="map"></div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-      </div>
+        </tbody>
+      </table>
     </div>
   </div>
-</div>
-<hr class="m-2">
-<div>
-  <h3 data-toggle="collapse" data-target="#info">
-    <i class="lni lni-circle-plus"></i>
-    <i class="lni lni-circle-minus" style="display:none"></i>
-    More Information
-  </h3>
-  <div class="collapse m-3" id="info">
-    <div class="row mb-4">
-      <div class="col">
-        <h5 style="font-size:16px">Boat type</h5>
-        <p style="font-size:18px; font-weight:bold">{{ trip.boat_type }}</p>
-      </div>
-      <div class="col">
-        <h5 style="font-size:16px">Travel expenses</h5>
-        <p style="font-size:18px; font-weight:bold">{{ trip.travel_expenses }}</p>
-      </div>
-    </div>
-    <div class="row mb-4">
-      <div class="col">
-        <h5 style="font-size:16px">Boat model</h5>
-        <p style="font-size:18px; font-weight:bold">{{ trip.boat_model }}</p>
-      </div>
-      <div class="col">
-        <h5 style="font-size:16px">Qualification level required</h5>
-        <p style="font-size:18px; font-weight:bold">{{ trip.qualif_level }}</p>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col">
-        <h5 style="font-size:16px">Sailing mode</h5>
-        <p style="font-size:18px; font-weight:bold">{{ trip.sailing_mode }}</p>
-      </div>
-      <div class="col">
-        <h5 style="font-size:16px">Date posted</h5>
-        <p style="font-size:18px; font-weight:bold">{{ moment(trip.created).format("DD MMMM, YYYY") }}</p>
-      </div>
-    </div>
-  </div>
-</div>
-<hr class="m-2">
-<div>
-  <h3 data-toggle="collapse" data-target="#imgs">
-    <i class="lni lni-circle-plus"></i>
-    <i class="lni lni-circle-minus" style="display:none"></i>
-    Images
-    {% if current_user == trip.skipper %}
-    <a href="{{ url_for('trips.pictures', uid=trip.uid) }}" class="btn btn-primary ml-4 btn-sm" target="_blank">Add & Remove Images</a>
-    {% endif %}
-  </h3>
-  <div class="collapse" id="imgs">
-    {% if trip.images.count() %}
-    <div class="m-3 carousel slide" data-ride="carousel" id="carousel">
-      <!-- Indicators -->
-      <ul class="carousel-indicators">
-        {% for i in range(trip.images.count()) %}
-        <li data-target="#carousel" data-slide-to="{{ i }}" class="{{ '' if i else 'active' }}"></li>
-        {% endfor %}
-      </ul>
-    
-      <!-- The slideshow -->
-      <div class="carousel-inner bg-dark">
-        {% for num, img in enumerate(trip.images.all()) %}
-        <div class="carousel-item {{ '' if num else 'active'}}">
-          <img src="{{ url_for('static', filename='pictures/'+img.url) }}" style="height: 500px; width: 100%; object-fit: contain; object-position: center;">
+  <!-- Modal -->
+  <div class="modal fade" id="map-modal">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Modal Heading</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>
-        {% endfor %}
+        <div class="modal-body">
+          <div class="container" style="height: 50vh;" id="map"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
       </div>
-    
-      <!-- Left and right controls -->
-      <a class="carousel-control-prev" href="#carousel" data-slide="prev">
-        <span class="carousel-control-prev-icon"></span>
-      </a>
-      <a class="carousel-control-next" href="#carousel" data-slide="next">
-        <span class="carousel-control-next-icon"></span>
-      </a>
-    
     </div>
-    {% else %}
-    <i>This trip has no images...</i>
-    {% endif %}
   </div>
-</div>
-{% if current_user != trip.skipper %}
-<hr class="m-2">
-<div>
-  <h3 data-toggle="collapse" data-target="#contact">
-    <i class="lni lni-circle-plus"></i>
-    <i class="lni lni-circle-minus" style="display:none"></i>
-    Contact Skipper
-  </h3>
-  <div class="collapse m-3" id="contact">
-    {% if current_user.is_authenticated %}
-    <form action="{{ url_for('messages.about') }}" method="post">
-      {{ form.csrf_token() }}
-      {{ form.t_uid(value=trip.uid) }}
-
-      <div class="form-group">
-        <div>{{ form.subject(class="form-control", placeholder="Subject...") }}</div>
+  <hr class="m-2">
+  <div>
+    <h3 class="text-toggle" data-toggle="collapse" data-target="#info" aria-expanded="false">
+      <i class="lni lni-circle-plus text-collapsed"></i>
+      <i class="lni lni-circle-minus text-expanded"></i>
+      More Information
+    </h3>
+    <div class="collapse m-3" id="info" data-parent="#accordion">
+      <div class="row mb-4">
+        <div class="col">
+          <h5 style="font-size:16px">Boat type</h5>
+          <p style="font-size:18px; font-weight:bold">{{ trip.boat_type }}</p>
+        </div>
+        <div class="col">
+          <h5 style="font-size:16px">Travel expenses</h5>
+          <p style="font-size:18px; font-weight:bold">{{ trip.travel_expenses }}</p>
+        </div>
       </div>
-
-      <div class="form-group">
-        <div>{{ form.content(class="form-control", placeholder="Message...", rows="7") }}</div>
+      <div class="row mb-4">
+        <div class="col">
+          <h5 style="font-size:16px">Boat model</h5>
+          <p style="font-size:18px; font-weight:bold">{{ trip.boat_model }}</p>
+        </div>
+        <div class="col">
+          <h5 style="font-size:16px">Qualification level required</h5>
+          <p style="font-size:18px; font-weight:bold">{{ trip.qualif_level }}</p>
+        </div>
       </div>
-
-      <div class="form-group">
-        <div>{{ form.submit(class="btn btn-primary")}}</div>
+      <div class="row">
+        <div class="col">
+          <h5 style="font-size:16px">Sailing mode</h5>
+          <p style="font-size:18px; font-weight:bold">{{ trip.sailing_mode }}</p>
+        </div>
+        <div class="col">
+          <h5 style="font-size:16px">Date posted</h5>
+          <p style="font-size:18px; font-weight:bold">{{ moment(trip.created).format("DD MMMM, YYYY") }}</p>
+        </div>
       </div>
-    </form>
-    {% else %}
-    <p>You need to be logged in in order to contact the skipper. <a href="{{ url_for('auth.login') }}">Log In</a></p>
-    {% endif %}
+    </div>
   </div>
+  <hr class="m-2">
+  <div>
+    <h3 class="text-toggle" data-toggle="collapse" data-target="#imgs" aria-expanded="false">
+      <i class="lni lni-circle-plus text-collapsed"></i>
+      <i class="lni lni-circle-minus text-expanded"></i>
+      Images
+      {% if current_user == trip.skipper %}
+      <a href="{{ url_for('trips.pictures', uid=trip.uid) }}" class="btn btn-primary ml-4 btn-sm" target="_blank">Add &
+        Remove Images</a>
+      {% endif %}
+    </h3>
+    <div class="collapse" id="imgs" data-parent="#accordion">
+      {% if trip.images.count() %}
+      <div class="m-3 carousel slide" data-ride="carousel" id="carousel">
+        <!-- Indicators -->
+        <ul class="carousel-indicators">
+          {% for i in range(trip.images.count()) %}
+          <li data-target="#carousel" data-slide-to="{{ i }}" class="{{ '' if i else 'active' }}"></li>
+          {% endfor %}
+        </ul>
+
+        <!-- The slideshow -->
+        <div class="carousel-inner bg-dark">
+          {% for num, img in enumerate(trip.images.all()) %}
+          <div class="carousel-item {{ '' if num else 'active'}}">
+            <img src="{{ url_for('static', filename='pictures/'+img.url) }}"
+              style="height: 500px; width: 100%; object-fit: contain; object-position: center;">
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- Left and right controls -->
+        <a class="carousel-control-prev" href="#carousel" data-slide="prev">
+          <span class="carousel-control-prev-icon"></span>
+        </a>
+        <a class="carousel-control-next" href="#carousel" data-slide="next">
+          <span class="carousel-control-next-icon"></span>
+        </a>
+
+      </div>
+      {% else %}
+      <i>This trip has no images...</i>
+      {% endif %}
+    </div>
+  </div>
+  {% if current_user != trip.skipper %}
+  <hr class="m-2">
+  <div>
+    <h3 class="text-toggle" data-toggle="collapse" data-target="#contact" aria-expanded="false">
+      <i class="lni lni-circle-plus text-collapsed"></i>
+      <i class="lni lni-circle-minus text-expanded"></i>
+      Contact Skipper
+    </h3>
+    <div class="collapse m-3" id="contact" data-parent="#accordion">
+      {% if current_user.is_authenticated %}
+      <form action="{{ url_for('messages.about') }}" method="post">
+        {{ form.csrf_token() }}
+        {{ form.t_uid(value=trip.uid) }}
+
+        <div class="form-group">
+          <div>{{ form.subject(class="form-control", placeholder="Subject...") }}</div>
+        </div>
+
+        <div class="form-group">
+          <div>{{ form.content(class="form-control", placeholder="Message...", rows="7") }}</div>
+        </div>
+
+        <div class="form-group">
+          <div>{{ form.submit(class="btn btn-primary")}}</div>
+        </div>
+      </form>
+      {% else %}
+      <p>You need to be logged in in order to contact the skipper. <a href="{{ url_for('auth.login') }}">Log In</a></p>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
 </div>
-{% endif %}
-<script src="https://maps.googleapis.com/maps/api/js?key={{ current_app.config['MAPS_API_KEY'] }}&v=weekly"></script>
 
 <script>
-  var labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  var zoom = 8;
-
-  const markers = JSON.parse(`{{ markers | tojson }}`);
-
-  const mapElement = document.querySelector("#map-modal #map");
-  const map = new google.maps.Map(mapElement, {
-    zoom: zoom,
-    center: {lat: 0, lng: 0},
-    mapTypeControl: false,
-    streetViewControl: false,
-    rotateControl: false
-  });
-
-  markers.map((pos, i) => {
-    if (!pos) return;
-    new google.maps.Marker({
-      map: map,
-      position: pos,
-      label: labels[i % labels.length]
-    });
-  });
-
-  let path = new google.maps.Polyline({
-    path: markers.filter(i=>i),
-    geodesic: true,
-    strokeColor: "#FF0000",
-    strokeOpacity: 1.0,
-    strokeWeight: 2,
-  });
-
-  path.setMap(map);
-
-  function loadMap(name, arr, dep, lat, lng) {
-    let title = document.querySelector("#map-modal .modal-title");
-    if (arr!="?") arr = moment(arr).format("DD MMM");
-    if (dep!="?") dep = moment(dep).format("DD MMM");
-    title.innerHTML = name + `${name} (<i>${arr}</i> to <i>${dep}</i>)`;
-
-    map.setCenter({lat:lat,lng:lng})
-    map.setZoom(zoom)
-  }
+  const destinations = JSON.parse(`{{ markers | tojson }}`);
 </script>
+
+<script src="{{ url_for('static', filename='js/show_destinations.js') }}"></script>
 {% endblock %}

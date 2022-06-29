@@ -22,12 +22,11 @@
     {{ form.csrf_token() }}
 
     <div class="d-flex mt-4 form.group" style="gap:10px">
-      <button type="button" class="btn btn-info flex-fill" value="2" onclick="select_value(this)">2.-</button>
-      <button type="button" class="btn btn-outline-info flex-fill" value="5" onclick="select_value(this)">5.-</button>
-      <button type="button" class="btn btn-outline-info flex-fill" value="10" onclick="select_value(this)">10.-</button>
-      <button type="button" class="btn btn-outline-info flex-fill" value="20" onclick="select_value(this)">20.-</button>
-      <button type="button" class="btn btn-outline-info flex-fill" value="50" onclick="select_value(this)">50.-</button>
-      <button type="button" class="btn btn-outline-info flex-fill" value="100" onclick="select_value(this)">100.-</button>
+      {% for btn in form.amount_values %}
+      <button type="button" class="btn btn{{ '-' if btn.first else '-outline-'}}info flex-fill" value="{{ btn.value }}" onclick="select_value(this)">
+        {{ btn.text }}
+      </button>
+      {% endfor %}
 
       <input type="text" class="btn btn-outline-info flex-fill" placeholder="Other..." oninput="select_value(this)">
     </div>
@@ -38,6 +37,20 @@
   </form>
 </div>
 
-<p class="mb-4">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Minus, dolorum sequi rem nihil perspiciatis aspernatur iste beatae nulla maxime quisquam laborum quae aut veritatis? Ipsum quo pariatur esse distinctio nihil provident sapiente officiis aut nisi recusandae consequuntur optio corporis, blanditiis voluptas rem reprehenderit veniam earum facilis velit expedita hic, at sint. Adipisci, debitis quidem soluta unde tempora placeat quasi ipsam cupiditate maiores necessitatibus dolorum, sit quisquam explicabo commodi, totam esse suscipit. Quae aliquam, at odit dolore culpa esse sit nam temporibus explicabo illo hic dolorem sunt nulla quasi adipisci id ipsum officia animi aperiam ipsam laboriosam. Quam hic ea, vitae nostrum itaque soluta. Neque officiis maxime culpa eum maiores incidunt ab provident quis, impedit tempore. Consequuntur necessitatibus dolorum numquam consectetur, quos voluptatibus cupiditate fugit. Cumque nisi obcaecati quidem ratione incidunt, repellendus dolores placeat doloribus aliquid accusantium corporis possimus distinctio eveniet laborum, id neque, velit ad esse porro temporibus illo labore adipisci quod aspernatur. Esse aperiam harum eligendi impedit officiis dolore quos provident numquam dolorem eum? Quos possimus, repellat iste aut dolores, in explicabo sed impedit unde, vero rem saepe accusantium fuga soluta ipsum vitae illo quia qui voluptate! Accusantium iste officiis, atque delectus id odio recusandae mollitia quo beatae exercitationem!</p>
+<p class="mb-4">
+  Lorem ipsum dolor sit, amet consectetur adipisicing elit. Minus, dolorum sequi rem nihil perspiciatis aspernatur iste
+  beatae nulla maxime quisquam laborum quae aut veritatis? Ipsum quo pariatur esse distinctio nihil provident sapiente
+  officiis aut nisi recusandae consequuntur optio corporis, blanditiis voluptas rem reprehenderit veniam earum facilis
+  velit expedita hic, at sint. Adipisci, debitis quidem soluta unde tempora placeat quasi ipsam cupiditate maiores
+  necessitatibus dolorum, sit quisquam explicabo commodi, totam esse suscipit. Quae aliquam, at odit dolore culpa esse
+  sit nam temporibus explicabo illo hic dolorem sunt nulla quasi adipisci id ipsum officia animi aperiam ipsam
+  laboriosam. Quam hic ea, vitae nostrum itaque soluta. Neque officiis maxime culpa eum maiores incidunt ab provident
+  quis, impedit tempore. Consequuntur necessitatibus dolorum numquam consectetur, quos voluptatibus cupiditate fugit.
+  Cumque nisi obcaecati quidem ratione incidunt, repellendus dolores placeat doloribus aliquid accusantium corporis
+  possimus distinctio eveniet laborum, id neque, velit ad esse porro temporibus illo labore adipisci quod aspernatur.
+  Esse aperiam harum eligendi impedit officiis dolore quos provident numquam dolorem eum? Quos possimus, repellat iste
+  aut dolores, in explicabo sed impedit unde, vero rem saepe accusantium fuga soluta ipsum vitae illo quia qui
+  voluptate! Accusantium iste officiis, atque delectus id odio recusandae mollitia quo beatae exercitationem!
+</p>
 
 {% endblock %}

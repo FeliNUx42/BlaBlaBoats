@@ -7,8 +7,10 @@
         <h4 class="card-title">{{ message.subject }}</h4>
         <div class="ml-5">
           To:
-          <img src="/static/pictures/default.png" class="rounded-circle mr-2 ml-2" style="width:32px; height: 32px; object-fit: cover;">
-          <span><b>{{ message.receiver.full_name }}</b>, Sent on {{ moment(message.created).format("DD MMM, YYYY") }}</span>
+          <img src="/static/pictures/default.png" class="rounded-circle mr-2 ml-2"
+            style="width:32px; height: 32px; object-fit: cover;">
+          <span><b>{{ message.receiver.full_name }}</b>, Sent on {{ moment(message.created).format("DD MMM, YYYY")
+            }}</span>
         </div>
       </div>
       <p class="card-text" max-length="200">

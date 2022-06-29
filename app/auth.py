@@ -1,6 +1,6 @@
-from flask import Blueprint, render_template, redirect, url_for, flash
+from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import current_user, login_user, logout_user, login_required
-from .forms import SignupForm, LoginForm, ChangePasswordForm
+from .forms.auth import SignupForm, LoginForm, ChangePasswordForm
 from .models import User
 from . import db
 import os
@@ -25,7 +25,6 @@ def signup():
     db.session.commit()
 
     login_user(user, remember=True)
-
     flash("Account created successfully.", "success")
 
     return redirect(url_for("private.dashboard"))
@@ -37,17 +36,20 @@ def signup():
 def login():
   form = LoginForm()
 
+  if current_user.is_authenticated:
+    flash("You are already logged in.", "error")
+    return redirect(url_for("private.dashboard"))
+
   if form.validate_on_submit():
     user = User.query.filter_by(username=form.username.data).first()
-    if user and user.verify_password(form.password.data):
-      login_user(user, remember=form.remember.data)
 
-      flash("Logged in successfully.", "success")
+    login_user(user, remember=form.remember.data)
+    flash("Logged in successfully.", "success")
 
-      return redirect(url_for("profile.user_page", uid=user.uid))
+    next_page = request.args.get("next")
+
+    return redirect(next_page or url_for("profile.user_page", uid=user.uid))
     
-    flash("Wrong username or password.", "danger")
-
   return render_template("auth/login.html", form=form)
 
 
@@ -55,7 +57,6 @@ def login():
 @login_required
 def logout():
   logout_user()
-
   flash("Logged out successfully.", "success")
   
   return redirect(url_for("home.index"))
@@ -67,14 +68,11 @@ def security():
   form = ChangePasswordForm()
 
   if form.validate_on_submit():
-    if current_user.verify_password(form.o_password.data):
-      current_user.password = form.n_password.data
+    current_user.password = form.n_password.data
+    db.session.commit()
 
-      db.session.commit()
+    flash("Password changed successfully.", "success")
 
-      flash("Password changed successfully.", "success")
-      return redirect(url_for("profile.user_page", uid=current_user.uid))
-      
-    flash("The old password doesn't match.", "danger")
-
+    return redirect(url_for("profile.user_page", uid=current_user.uid))
+    
   return render_template("auth/security.html", form=form)

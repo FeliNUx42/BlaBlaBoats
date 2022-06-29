@@ -1,67 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css">
-  <link href="https://cdn.lineicons.com/3.0/lineicons.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.lineicons.com/3.0/lineicons.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="https://maps.googleapis.com/maps/api/js?key={{ current_app.config['MAPS_API_KEY'] }}&v=weekly&libraries=places"></script>
   <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script> 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
   {{ moment.include_moment() }}
   <title>{% block title %}Home{% endblock %}</title>
-  <style>
-    #home-banner {
-      background-repeat: no-repeat;
-      background-size: cover;
-      background-position: center;
-      background-image: url('{{ url_for("static", filename="banner.jpeg")}}');
-    }
-
-    #donate-banner {
-      background-repeat: no-repeat;
-      background-size: cover;
-      background-position: right;
-      background-image: url('{{ url_for("static", filename="donate.png")}}');
-    }
-
-    .message-card {
-      color: #212529;
-    }
-
-    .message-card:hover {
-      color: #212529;
-      background-color: #e9ecef;
-      text-decoration: none;
-    }
-
-    .text-toggle[aria-expanded=false] .text-expanded {
-      display: none;
-    }
-    .text-toggle[aria-expanded=true] .text-collapsed {
-      display: none;
-    }
-    
-  </style>
 </head>
+
 <body>
   <div style="min-height: 100vh;">
     {% block banner %}{% endblock %}
-
-    <nav  class="navbar navbar-expand-md bg-dark navbar-dark sticky-top">
+    <nav class="navbar navbar-expand-md bg-dark navbar-dark sticky-top">
       <div class="container">
         <a href="{{ url_for('home.index') }}" class="navbar-brand">
           <img src="{{ url_for('static', filename='logo.png') }}" alt="" height="27px" class="mr-2">
           BlaBlaBoat
         </a>
-    
+
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
           <span class="navbar-toggler-icon"></span>
         </button>
-    
+
         <div class="collapse navbar-collapse" id="collapsibleNavbar">
           <ul class="navbar-nav mr-auto">
             <li class="nav-item">
@@ -97,7 +67,9 @@
             </li>
             {% endif %}
             <li class="nav-item">
-              <a href="{{ url_for('donate.donate_page') }}" class="nav-link"><span class="btn btn-secondary m-0 text-dark d-inline" style="border-width: 2px !important;">Donate</span></a>
+              <a href="{{ url_for('donate.donate_page') }}" class="nav-link"><span
+                  class="btn btn-secondary m-0 text-dark d-inline"
+                  style="border-width: 2px !important;">Donate</span></a>
             </li>
           </ul>
           <form class="form-inline my-2 my-lg-0" method="get" action="{{ url_for('home.search') }}">
@@ -105,30 +77,31 @@
               <div class="input-group-prepend">
                 <span class="input-group-text"><i class="lni lni-search-alt"></i></span>
               </div>
-              {{ g.search_form.q(class="form-control", placeholder="Search", autocomplete="off", required=True) }}
-              {{ g.search_form.unit(hidden=True) }}
-              {{ g.search_form.boat_type(hidden=True) }}
-              {{ g.search_form.sailing_mode(hidden=True) }}
+              {{ search_form.q(class="form-control", placeholder="Search", autocomplete="off", required=True) }}
+              {{ search_form.unit(hidden=True, id="") }}
+              {{ search_form.boat_type(hidden=True, id="") }}
+              {{ search_form.sailing_mode(hidden=True, id="") }}
             </div>
           </form>
         </div>
       </div>
     </nav>
-    
+
     <main class="container">
       <br>
       {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-          {% for category, message in messages %}
-            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-              {{ message }}
-              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-              </button>
-          </div>
-          {% endfor%}
-        {% endif %}
+      {% if messages %}
+      {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      {% endfor%}
+      {% endif %}
       {% endwith %}
+
       {% block content %}{% endblock %}
       <br>
     </main>
@@ -137,6 +110,8 @@
   <footer class="jumbotron jumbotron-fluid text-center" style="margin-bottom: 0;">
     <p>Footer</p>
   </footer>
-  <script src="{{ url_for('static', filename='main.js') }}"></script>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
+
 </html>

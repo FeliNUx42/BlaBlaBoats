@@ -1,9 +1,9 @@
-from flask import Blueprint, abort, current_app, jsonify, render_template, redirect, request, url_for, flash, request
+from flask import Blueprint, abort, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
-from PIL import Image as PImage
-from datetime import datetime
-from .models import Destination, User, Trip, Image
-from .forms import CreateEditTripForm, MsgAboutForm, Place, AddImage, DeleteImage
+from .models import Destination, Trip, Image
+from .forms.messages import MsgAboutForm
+from .forms.trips import CreateEditTripForm, DeleteTrip, AddImage, DeleteImage
+from .tools import save_picture, remove_picture, create_destination, create_place, delete_trip
 from . import db
 import os
 
@@ -12,19 +12,21 @@ trips = Blueprint("trips", __name__)
 
 @trips.route("/<uid>")
 def trip_page(uid):
-  trip = Trip.query.filter_by(uid=uid).first_or_404()
   form = MsgAboutForm()
+  del_form = DeleteTrip()
+  trip = Trip.query.filter_by(uid=uid).first_or_404()
 
-  destinations = trip.destinations.order_by(Destination.order.asc()).all()
-  markers = [{"lat":d.lat, "lng":d.lng} if (d.lat and d.lng) else None for d in destinations]
+  dest = trip.destinations.order_by(Destination.order.asc()).all()
+  markers = [d.to_json() for d in dest]
 
-  return render_template("trips/trip.html", trip=trip, destinations=destinations, markers=markers, form=form, enumerate=enumerate, current_app=current_app)
+  return render_template("trips/trip.html", trip=trip, dest=dest, markers=markers, form=form, del_form=del_form)
+
 
 @trips.route("/<uid>/edit", methods=["GET", "POST"])
 @login_required
 def edit(uid):
-  trip = Trip.query.filter_by(uid=uid).first_or_404()
   form = CreateEditTripForm()
+  trip = Trip.query.filter_by(uid=uid).first_or_404()
 
   if trip.skipper != current_user:
     abort(403)
@@ -39,14 +41,10 @@ def edit(uid):
     trip.qualif_level = form.qualif_level.data
 
     if form.banner.data:
-      if trip.banner != "default.png":
-        old_path = os.path.join(current_app.root_path, current_app.config["PICTURES_FOLDER"], trip.banner)
-        os.remove(old_path)
-
-      i = PImage.open(form.banner.data)
       filename = os.urandom(8).hex() + os.path.splitext(form.banner.data.filename)[-1]
-      new_path = os.path.join(current_app.root_path, current_app.config["PICTURES_FOLDER"], filename)
-      i.save(new_path)
+
+      remove_picture(trip.banner)
+      save_picture(filename, form.banner.data)
 
       trip.banner = filename
     
@@ -54,19 +52,9 @@ def edit(uid):
       db.session.delete(d)
     
     for i, d in enumerate(form.dest.data):
-      dest = Destination()
-      dest.name = d["place"]
-      dest.lat = d["lat"]
-      dest.lng = d["lng"]
-      dest.order = i
-      dest.arrival = d["arr_date"]
-      dest.departure = d["dep_date"]
-      dest.trip = trip
-
-      db.session.add(dest)
+      db.session.add(create_destination(i, d, trip))
 
     db.session.commit()
-
     flash("Trip details updated successfully.", "success")
 
     return redirect(url_for("trips.trip_page", uid=trip.uid))
@@ -83,21 +71,18 @@ def edit(uid):
   form.dest.pop_entry()
   form.dest.pop_entry()
   
-  for i, d in enumerate(trip.destinations.order_by(Destination.order.asc()).all()):
-    entry = Place()
-    entry.place = d.name
-    entry.lat = d.lat
-    entry.lng = d.lng
-    entry.arr_date = d.arrival
-    entry.dep_date = d.departure
-    form.dest.append_entry(entry)
+  for d in trip.destinations.order_by(Destination.order.asc()).all():
+    form.dest.append_entry(create_place(d))
   
   for i, d in enumerate(form.dest):
-    if not i: d.place.label.text = "Departure"
-    elif i == len(form.dest) - 1: d.place.label.text = "Arrival"
-    else: d.place.label.text = f"Stopover {i}"
+    if not i:
+      d.place.label.text = "Departure"
+    elif i == len(form.dest)-1:
+      d.place.label.text = "Arrival"
+    else:
+      d.place.label.text = f"Stopover {i}"
 
-  return render_template("trips/create_edit.html", form=form, title="Edit Trip", enumerate=enumerate, len=len, trip=trip, current_app=current_app)
+  return render_template("trips/create_edit.html", form=form, title="Edit Trip", trip=trip)
 
 
 @trips.route("/create", methods=["GET", "POST"])
@@ -120,25 +105,13 @@ def create():
     db.session.add(trip)
 
     if form.banner.data:
-      i = PImage.open(form.banner.data)
       filename = os.urandom(8).hex() + os.path.splitext(form.banner.data.filename)[-1]
-      path = os.path.join(current_app.root_path, current_app.config["PICTURES_FOLDER"], filename)
-      i.save(path)
+      save_picture(filename, form.banner.data)
 
       trip.banner = filename
  
-
     for i, d in enumerate(form.dest.data):
-      dest = Destination()
-      dest.name = d["place"]
-      dest.lat = d["lat"]
-      dest.lng = d["lng"]
-      dest.order = i
-      dest.arrival = d["arr_date"]
-      dest.departure = d["dep_date"]
-      dest.trip = trip
-
-      db.session.add(dest)
+      db.session.add(create_destination(i, d, trip))
 
     db.session.commit()
 
@@ -147,48 +120,49 @@ def create():
     return redirect(url_for("trips.trip_page", uid=trip.uid))
   
   for i, d in enumerate(form.dest):
-    if not i: d.place.label.text = "Departure"
-    elif i == len(form.dest) - 1: d.place.label.text = "Arrival"
-    else: d.place.label.text = f"Stopover {i}"
+    if not i:
+      d.place.label.text = "Departure"
+    elif i == len(form.dest)-1:
+      d.place.label.text = "Arrival"
+    else:
+      d.place.label.text = f"Stopover {i}"
 
-  return render_template("trips/create_edit.html", form=form, title="Create new Trip", enumerate=enumerate, len=len, current_app=current_app)
+  return render_template("trips/create_edit.html", form=form, title="Create new Trip")
 
 
-@trips.route("/<uid>/delete") # exploit: csrf
+@trips.route("/<uid>/delete", methods=["POST"])
 @login_required
 def delete(uid):
+  form = DeleteTrip()
   trip = Trip.query.filter_by(uid=uid).first_or_404()
 
   if trip.skipper != current_user:
     abort(403)
-
-  if trip.banner != "default.png":
-    banner = os.path.join(current_app.root_path, current_app.config["PICTURES_FOLDER"], trip.banner)
-    os.remove(banner)
   
-  # need to delete images, destinations...
+  if form.validate_on_submit():
+    delete_trip(trip)
+    
+    db.session.commit()
+    flash("Trip deleted successfully.", "success")
 
-  db.session.delete(trip)
-  db.session.commit()
-
-  return redirect(url_for("profile.user_page", uid=current_user.uid))
+    return redirect(url_for("profile.user_page", uid=current_user.uid))
+  
+  return redirect(request.referrer)
 
 
 @trips.route("/<uid>/pictures", methods=["GET", "POST"])
 @login_required
 def pictures(uid):
-  trip = Trip.query.filter_by(uid=uid).first_or_404()
   add_form = AddImage()
   del_form = DeleteImage()
+  trip = Trip.query.filter_by(uid=uid).first_or_404()
 
   if trip.skipper != current_user:
     abort(403)
   
   if add_form.add_submit.data and add_form.validate():
-    i = PImage.open(add_form.image.data)
     filename = os.urandom(8).hex() + os.path.splitext(add_form.image.data.filename)[-1]
-    path = os.path.join(current_app.root_path, current_app.config["PICTURES_FOLDER"], filename)
-    i.save(path)
+    save_picture(filename, add_form.image.data)
 
     img = Image()
     img.url = filename
@@ -201,9 +175,9 @@ def pictures(uid):
 
   if del_form.del_submit.data and del_form.validate():
     img = trip.images.filter_by(url=del_form.image.data).first()
-    if not img: abort(403)
-    path = os.path.join(current_app.root_path, current_app.config["PICTURES_FOLDER"], del_form.image.data)
-    os.remove(path)
+    if not img: abort(500)
+
+    remove_picture(img.url)
     
     db.session.delete(img)
     db.session.commit()

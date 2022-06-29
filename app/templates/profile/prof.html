@@ -7,7 +7,8 @@
 <div class="row">
   <div class="col-md-4">
     <div class="card">
-      <img class="card-img-top" src="{{ url_for('static', filename='pictures/'+user.profile_pic) }}" alt="Card image" style="width: 100%">
+      <img class="card-img-top" src="{{ url_for('static', filename='pictures/'+user.profile_pic) }}" alt="Card image"
+        style="width: 100%">
       <div class="card-body">
         <h4 class="card-title">{{ user.username }}</h4>
         <p class="card-text">{{ user.description }}</p>
@@ -16,7 +17,8 @@
         {% elif current_user.is_authenticated %}
         <button class="btn btn-primary btn-block" data-toggle="modal" data-target="#contact-form">Contact</button>
         {% else %}
-        <a href="{{ url_for('auth.login', next=url_for('profile.user_page', uid=user.uid)) }}" class="btn btn-primary">Contact</a>
+        <a href="{{ url_for('auth.login', next=url_for('profile.user_page', uid=user.uid)) }}"
+          class="btn btn-primary">Contact</a>
         {% endif %}
       </div>
     </div>
@@ -24,30 +26,30 @@
 
   {% if current_user.is_authenticated and current_user != user %}
   <div class="modal fade" id="contact-form">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
       <form class="modal-content" action="{{ url_for('messages.contact') }}" method="post">
         {{ form.csrf_token() }}
         {{ form.u_uid(value=user.uid) }}
-  
+
         <div class="modal-header">
           <h4 class="modal-title">Send Message to <i>{{ user.username }}</i></h4>
           <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>
-  
+
         <div class="modal-body">
           <div class="form-group">
             <div>{{ form.subject(class="form-control", placeholder="Subject...") }}</div>
           </div>
           <div class="form-group">
-            <div>{{ form.content(class="form-control", placeholder="Message...", rows="7") }}</div>
+            <div>{{ form.content(class="form-control", placeholder="Message...", rows="10") }}</div>
           </div>
         </div>
-  
+
         <div class="modal-footer">
           {{ form.submit(class="btn btn-primary")}}
           <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
         </div>
-  
+
       </form>
     </div>
   </div>
@@ -61,14 +63,15 @@
       <li class="nav-item">
         <a class="nav-link" data-toggle="tab" href="#trips">Planned Trips</a>
       </li>
+      {#
       <li class="nav-item">
         <a class="nav-link" data-toggle="tab" href="#reviews">Reviews</a>
       </li>
+      #}
     </ul>
 
     <br>
-    
-    <!-- Tab panes -->
+
     <div class="tab-content">
       <div class="tab-pane container active" id="overview">
         {% include "profile/overview.html" %}
@@ -76,9 +79,11 @@
       <div class="tab-pane container fade" id="trips">
         {% include "profile/trips.html" %}
       </div>
+      {#
       <div class="tab-pane container fade" id="reviews">
         {% include "profile/reviews.html" %}
       </div>
+      #}
     </div>
   </div>
 </div>

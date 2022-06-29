@@ -1,7 +1,7 @@
-from flask import Blueprint, redirect, render_template, jsonify, url_for, current_app, flash
+from flask import Blueprint, render_template
 from .models import Trip, User
-from .forms import SearchForm
-from . import db
+from .forms.search import SearchForm
+
 
 home = Blueprint("home", __name__)
 
@@ -9,9 +9,11 @@ home = Blueprint("home", __name__)
 def index():
   return render_template("main/home.html")
 
+
 @home.route("/favicon.ico")
 def icon():
   return ""
+
 
 @home.route("/search")
 def search():
@@ -92,16 +94,14 @@ def search():
     trips, dest = Trip.search(t_query)
     users, _ = User.search(u_query)
 
-    if dest:
-      dest = [d.to_json() for d in dest]
-      filtered=True
-    else:
-      dest = [[d.to_json() for d in t.destinations.all()] for t in trips.all()]
-      filtered=False
+    filtered = bool(dest)
+
+    if dest: dest = [d.to_json() for d in dest]
+    else: dest = [[d.to_json() for d in t.destinations.all()] for t in trips.all()]
     
-    label = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    label = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     trips_id = {t.title:label[n % len(label)] for n, t in enumerate(trips.all())}
 
-    return render_template("main/search.html", form=form, trips=trips, users=users, dest={"dest":dest, "filtered":filtered}, trips_id=trips_id, current_app=current_app)
+    return render_template("main/search.html", form=form, trips=trips, users=users, dest={"dest":dest, "filtered":filtered}, trips_id=trips_id)
   
-  return render_template("main/search.html", form=form, current_app=current_app)
+  return render_template("main/search.html", form=form)

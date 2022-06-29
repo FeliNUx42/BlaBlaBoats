@@ -6,28 +6,30 @@
 
 {% for field, errors in add_form.errors.items() %}
 <div class="alert alert-danger alert-dismissible fade show" role="alert">
-    {{ errors }}
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-    </button>
+  {{ errors }}
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
 </div>
 {% endfor %}
 
 {% for field, errors in del_form.errors.items() %}
 <div class="alert alert-danger alert-dismissible fade show" role="alert">
-    {{ errors }}
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-    </button>
+  {{ errors }}
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
 </div>
 {% endfor %}
 
-<h2>Your Images (<a href="{{ url_for('trips.trip_page', uid=trip.uid) }}" max-length="30">{{ trip.title }}</a>) <button class="btn btn-primary float-right"  data-toggle="modal" data-target="#addImg">Add Image</button> </h2>
+<h2>Your Images (<a href="{{ url_for('trips.trip_page', uid=trip.uid) }}" max-length="30">{{ trip.title }}</a>) <button
+    class="btn btn-primary float-right" data-toggle="modal" data-target="#addImg">Add Image</button> </h2>
 <br>
 <div class="d-flex flex-wrap justify-content-between">
   {% for img in trip.images.all() %}
   <form class="card mb-4" style="width:300px;" method="POST" action="">
-    <img class="card-img-top" src="{{ url_for('static', filename='pictures/'+img.url) }}" style="width:300px; height:300px; object-fit: contain; object-position: center; background-color: #343a40;">
+    <img class="card-img-top" src="{{ url_for('static', filename='pictures/'+img.url) }}"
+      style="width:300px; height:300px; object-fit: contain; object-position: center; background-color: #343a40;">
     {{ del_form.csrf_token() }}
     {{ del_form.image(value=img.url) }}
     {{ del_form.del_submit(class="btn btn-danger", style="width: 300px; border-radius: 0 0 .25rem .25rem;") }}
