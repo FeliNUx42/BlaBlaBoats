@@ -342,6 +342,9 @@
 .dark-mode .navbar {
   background-color: #282828 !important;
 }
+.dark-mode .donate {
+  color: #282828 !important;
+}
 .dark-mode .navbar .navbar-brand,
 .dark-mode .navbar-light .navbar-brand,
 .dark-mode .navbar-dark .navbar-brand,

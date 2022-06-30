@@ -237,7 +237,7 @@
         </div>
       </form>
       {% else %}
-      <p>You need to be logged in in order to contact the skipper. <a href="{{ url_for('auth.login') }}">Log In</a></p>
+      <p>You need to be logged in in order to contact the skipper. <a href="{{ url_for('auth.login', next=url_for('trips.trip_page', uid=trip.uid)) }}">Log In</a></p>
       {% endif %}
     </div>
   </div>
