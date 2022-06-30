@@ -9,8 +9,8 @@ from . import db
 
 class SearchableMixin(object):
   @classmethod
-  def search(cls, query, dest=False):
-    data = current_app.elasticsearch.search(index=cls.__tablename__, query=query)
+  def search(cls, query, sort, dest=False):
+    data = current_app.elasticsearch.search(index=cls.__tablename__, query=query, sort=sort)
     data = data.body
     
     ids = [int(hit["_id"]) for hit in data["hits"]["hits"]]
@@ -74,7 +74,7 @@ class User(db.Model, UserMixin, SearchableMixin):
     "properties": {
       "uid": {"type": "text"},
       "email": {"type": "text"},
-      "username": {"type": "text"},
+      "username": {"type": "text", "fields": {"raw": {"type": "keyword"}}},
       "full_name": {"type": "text"},
       "description": {"type": "text"}
     }
@@ -187,8 +187,8 @@ class Trip(db.Model, SearchableMixin):
   __mapping__ = {
     "properties": {
       "uid": {"type": "text"},
-      "title": {"type": "text"},
-      "description": {"type": "text"},
+      "title": {"type": "text", "fields": {"raw": {"type": "keyword"}}},
+      "description": {"type": "text", "fields": {"raw": {"type": "keyword"}}},
       "boat_type": {"type": "keyword"},
       "boat_model": {"type": "text"},
       "sailing_mode": {"type": "keyword"},
