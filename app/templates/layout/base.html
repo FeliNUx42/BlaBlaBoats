@@ -9,11 +9,13 @@
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css">
   <link rel="stylesheet" href="https://cdn.lineicons.com/3.0/lineicons.css">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dark-mode.css') }}">
   <script src="https://maps.googleapis.com/maps/api/js?key={{ current_app.config['MAPS_API_KEY'] }}&v=weekly&libraries=places"></script>
   <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="{{ url_for('static', filename='js/dark_mode.js') }}" defer></script>
   {{ moment.include_moment() }}
   <title>{% block title %}Home{% endblock %}</title>
 </head>
@@ -21,7 +23,7 @@
 <body>
   <div style="min-height: 100vh;">
     {% block banner %}{% endblock %}
-    <nav class="navbar navbar-expand-md bg-dark navbar-dark sticky-top">
+    <nav class="navbar navbar-expand-lg bg-dark navbar-dark sticky-top">
       <div class="container">
         <a href="{{ url_for('home.index') }}" class="navbar-brand">
           <img src="{{ url_for('static', filename='logo.png') }}" alt="" height="27px" class="mr-2">
@@ -37,12 +39,12 @@
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('home.index')}}">Home</a>
             </li>
-            <li class="nav-item">
+            <!--<li class="nav-item">
               <a class="nav-link" href="#">About</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="#">Contact</a>
-            </li>
+            </li>-->
             {% if current_user.is_authenticated %}
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
@@ -72,6 +74,10 @@
                   style="border-width: 2px !important;">Donate</span></a>
             </li>
           </ul>
+          <div class="custom-control custom-switch mr-3">
+            <input type="checkbox" name="dark-mode-switch" id="dark-mode-switch" class="custom-control-input">
+            <label for="dark-mode-switch" class="custom-control-label custom-nav-link">Dark Mode</label>
+          </div>
           <form class="form-inline my-2 my-lg-0" method="get" action="{{ url_for('home.search') }}">
             <div class="input-group">
               <div class="input-group-prepend">
