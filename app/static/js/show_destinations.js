@@ -8,8 +8,12 @@ const defaultLocation = { lat: 50, lng: 0 };
 const defaultPathColor = "#FF0000";
 const zoom = 6;
 
+// darkMode defined in ./dark_mode.js
+
+
 function createMap() {
   map = new google.maps.Map(mapElement, {
+    mapId: MAP_IDS.at(darkMode),
     zoom: zoom,
     center: defaultLocation,
     mapTypeControl: false,
@@ -44,8 +48,8 @@ function loadMap(index) {
 
   let { name, location, arrival, departure, trip_title, trip_url } = destinations[index];
 
-  if (arrival != "?") arrival = moment(arrival).format("DD MMM");
-  if (departure != "?") departure = moment(departure).format("DD MMM");
+  arrival = arrival ? arrival = moment(arrival).format("DD MMM") : "?";
+  departure = departure ? departure = moment(departure).format("DD MMM") : "?";
 
   title.innerHTML = `${name} ( <i>${arrival}</i> to <i>${departure}</i> )`;
 

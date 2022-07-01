@@ -1,8 +1,8 @@
 {% if i_messages.count() %}
 <ul class="list-group">
   {% for message in i_messages.all() %}
-  <li class="{{ 'jumbotron' if not message.read else '' }} p-0 card mb-3">
-    <a href="{{ url_for('messages.msg', uid=message.uid) }}" class="card-body message-card">
+  <li class="{{ 'jumbotron' if not message.read else '' }} p-0 card mb-3 message-card">
+    <a href="{{ url_for('messages.msg', uid=message.uid) }}" class="card-body">
       <div class="d-flex justify-content-between align-items-center">
         <h4 class="card-title">{{ message.subject }}</h4>
         <div class="ml-5">

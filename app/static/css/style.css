@@ -12,16 +12,6 @@
   background-image: url('/static/donate.png');
 }
 
-.message-card {
-  color: #212529;
-}
-
-.message-card:hover {
-  color: #212529;
-  background-color: #e9ecef;
-  text-decoration: none;
-}
-
 .text-toggle[aria-expanded=false] .text-expanded {
   display: none;
 }

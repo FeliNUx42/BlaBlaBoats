@@ -229,7 +229,7 @@
         </div>
 
         <div class="form-group">
-          <div>{{ form.content(class="form-control", placeholder="Message...", rows="7") }}</div>
+          <div>{{ form.content(class="form-control", placeholder="Message...", rows="8") }}</div>
         </div>
 
         <div class="form-group">
@@ -246,6 +246,8 @@
 
 <script>
   const destinations = JSON.parse(`{{ markers | tojson }}`);
+
+  const MAP_IDS = ["{{ current_app.config['MAPS_LIGHT_ID'] }}", "{{ current_app.config['MAPS_DARK_ID'] }}"];
 </script>
 
 <script src="{{ url_for('static', filename='js/show_destinations.js') }}"></script>

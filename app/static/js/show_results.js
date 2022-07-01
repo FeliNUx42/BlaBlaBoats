@@ -8,6 +8,9 @@ const resultsZoom = 6;
 const latlngbounds = new google.maps.LatLngBounds();
 const infoWindow = new google.maps.InfoWindow();
 
+// darkMode defined in ./dark_mode.js
+
+
 function showResults() {
   if (result_map) return;
   if (typeof dest == "undefined") return;
@@ -26,6 +29,7 @@ function showResults() {
 
 function createResultMap() {
   result_map = new google.maps.Map(resultsMapElement, {
+    mapId: MAP_IDS.at(darkMode),
     zoom: resultsZoom,
     center: resultsDefaultLocation,
     mapTypeControl: false,

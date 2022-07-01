@@ -5,10 +5,10 @@
   background-color: #121212; /* #181818, #212121, #323232, #909090 */
 }
 .dark-mode .bg-darkmode-dark {
-  background-color: --dark !important;
+  background-color: var(--dark) !important;
 }
 .dark-mode .bg-darkmode-light {
-  background-color: --light !important;
+  background-color: var(--light) !important;
 }
 .dark-mode .bg-darkmode-black {
   background-color: #222 !important;
@@ -56,59 +56,59 @@
 .dark-mode .list-group-item.active,
 .dark-mode .list-group-item.active:focus,
 .dark-mode .list-group-item.active:hover {
-  color: --white;
-  background-color: --primary;
-  border-color: --primary;
+  color: var(--white);
+  background-color: var(--primary);
+  border-color: var(--primary);
 }
 .dark-mode .list-group-item-primary,
 .dark-mode .alert-primary {
-  color: --white;
-  background-color: --primary;
-  border-color: --primary;
+  color: var(--white);
+  background-color: var(--primary);
+  border-color: var(--primary);
 }
 .dark-mode .list-group-item-primary.list-group-item-action:focus,
 .dark-mode .list-group-item-primary.list-group-item-action:hover {
-  color: --white;
+  color: var(--white);
   background-color: #0069d9;
 }
 .dark-mode .list-group-item-secondary,
 .dark-mode .alert-secondary {
-  color: --white;
-  background-color: --secondary;
-  border-color: --secondary;
+  color: var(--white);
+  background-color: var(--secondary);
+  border-color: var(--secondary);
 }
 .dark-mode .list-group-item-secondary.list-group-item-action:focus,
 .dark-mode .list-group-item-secondary.list-group-item-action:hover {
-  color: --white;
+  color: var(--white);
   background-color: #5a6268;
 }
 .dark-mode .list-group-item-success,
 .dark-mode .alert-success {
-  color: --white;
-  background-color: --success;
-  border-color: --success;
+  color: var(--white);
+  background-color: var(--success);
+  border-color: var(--success);
 }
 .dark-mode .list-group-item-success.list-group-item-action:focus,
 .dark-mode .list-group-item-success.list-group-item-action:hover {
-  color: --white;
+  color: var(--white);
   background-color: #218838;
 }
 .dark-mode .list-group-item-danger,
 .dark-mode .alert-danger {
-  color: --white;
-  background-color: --danger;
-  border-color: --danger;
+  color: var(--white);
+  background-color: var(--danger);
+  border-color: var(--danger);
 }
 .dark-mode .list-group-item-danger.list-group-item-action:focus,
 .dark-mode .list-group-item-danger.list-group-item-action:hover {
-  color: --white;
+  color: var(--white);
   background-color: #c82333;
 }
 .dark-mode .list-group-item-warning,
 .dark-mode .alert-warning {
   color: #212529;
-  background-color: --warning;
-  border-color: --warning;
+  background-color: var(--warning);
+  border-color: var(--warning);
 }
 .dark-mode .list-group-item-warning.list-group-item-action:focus,
 .dark-mode .list-group-item-warning.list-group-item-action:hover {
@@ -117,20 +117,20 @@
 }
 .dark-mode .list-group-item-info,
 .dark-mode .alert-info {
-  color: --white;
-  background-color: --info;
-  border-color: --info;
+  color: var(--white);
+  background-color: var(--info);
+  border-color: var(--info);
 }
 .dark-mode .list-group-item-info.list-group-item-action:focus,
 .dark-mode .list-group-item-info.list-group-item-action:hover {
-  color: --white;
+  color: var(--white);
   background-color: #138496;
 }
 .dark-mode .list-group-item-light,
 .dark-mode .alert-light {
   color: #212529;
-  background-color: --secondary;
-  border-color: --secondary;
+  background-color: var(--secondary);
+  border-color: var(--secondary);
 }
 .dark-mode .list-group-item-light.list-group-item-action:focus,
 .dark-mode .list-group-item-light.list-group-item-action:hover {
@@ -139,14 +139,17 @@
 }
 .dark-mode .list-group-item-dark,
 .dark-mode .alert-dark {
-  color: --white;
-  background-color: --dark;
-  border-color: --dark;
+  color: var(--white);
+  background-color: var(--dark);
+  border-color: var(--dark);
 }
 .dark-mode .list-group-item-dark.list-group-item-action:focus,
 .dark-mode .list-group-item-dark.list-group-item-action:hover {
-  color: --white;
+  color: var(--white);
   background-color: #23272b;
+}
+.dark-mode .alert .close span {
+  color: var(--white) !important;
 }
 .dark-mode .dropdown-menu {
   background-color: #171717;
@@ -344,6 +347,9 @@
 }
 .dark-mode .donate {
   color: #282828 !important;
+}
+.dark-mode .card.jumbotron {
+  background-color: #202020;
 }
 .dark-mode .navbar .navbar-brand,
 .dark-mode .navbar-light .navbar-brand,

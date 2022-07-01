@@ -119,8 +119,6 @@ def search():
     trips, dest = Trip.search(t_query, t_sort, dest=True)
     users = User.search(u_query, u_sort)
 
-    print(t_sort, trips.all())
-
     filtered = bool(dest)
 
     if dest: dest = [d.to_json() for d in dest]

@@ -17,3 +17,6 @@ class Config:
   STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
 
   MAPS_API_KEY = os.environ.get("MAPS_API_KEY")
+
+  MAPS_DARK_ID = os.environ.get("MAPS_DARK_ID")
+  MAPS_LIGHT_ID = os.environ.get("MAPS_LIGHT_ID")

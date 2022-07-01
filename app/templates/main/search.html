@@ -53,6 +53,10 @@
 </script>
 {% endif %}
 
+<script>
+  const MAP_IDS = ["{{ current_app.config['MAPS_LIGHT_ID'] }}", "{{ current_app.config['MAPS_DARK_ID'] }}"];
+</script>
+
 <script src="{{ url_for('static', filename='js/clear_filters.js') }}"></script>
 <script src="{{ url_for('static', filename='js/set_filters.js') }}"></script>
 <script src="{{ url_for('static', filename='js/show_results.js') }}"></script>

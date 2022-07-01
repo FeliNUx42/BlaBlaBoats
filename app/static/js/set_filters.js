@@ -14,6 +14,7 @@ const defaultRadius = 150 * M_TO_KM;
 const maxRadius = 3000 * M_TO_KM;
 
 // bounds defined in ./clear_filters.js
+// darkMode defined in ./dark_mode.js
 
 
 function openFilterMap({ dist, unit }) {
@@ -33,6 +34,7 @@ function createFilterMap() {
   navigator.geolocation.getCurrentPosition(centerMap)
 
   map = new google.maps.Map(filterMapElement, {
+    mapId: MAP_IDS.at(darkMode),
     zoom: filterZoom,
     center: filterDefaultLocation,
     mapTypeControl: false,
