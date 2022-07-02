@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash
+from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
 from flask_login import login_required, current_user
 from .models import Message
 from .forms.private import SettingsForm
@@ -13,7 +13,8 @@ private = Blueprint("private", __name__)
 @private.route("/")
 @login_required
 def dashboard():
-  trips = current_user.trips.all()
+  page = request.args.get("page", 1, type=int)
+  trips = current_user.trips.paginate(page=page, per_page=current_app.config["RES_PER_PAGE"])
 
   return render_template("profile/prof.html", user=current_user, trips=trips)
 
@@ -51,6 +52,8 @@ def settings():
 def inbox():
   form = MsgSearchForm()
 
+  page = request.args.get("page", 1, type=int)
+
   if form.validate():
     i_fields = [field for field in Message.__indexing__ if not "receiver" in field]
     s_fields = [field for field in Message.__indexing__ if not "sender" in field]
@@ -66,5 +69,12 @@ def inbox():
   else:
     i_messages = current_user.msg_received.order_by(Message.created.desc())
     s_messages = current_user.msg_sent.order_by(Message.created.desc())
+  
+  i_messages = i_messages.paginate(page, current_app.config["RES_PER_PAGE"], error_out=False)
+  s_messages = s_messages.paginate(page, current_app.config["RES_PER_PAGE"], error_out=False)
 
-  return render_template("private/messages.html", i_messages=i_messages, s_messages=s_messages, form=form)
+  args = dict(request.args)
+  args.pop("page", None)
+  args.pop("tab", None)
+
+  return render_template("private/messages.html", i_messages=i_messages, s_messages=s_messages, form=form, query=args)

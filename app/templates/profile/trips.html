@@ -4,7 +4,7 @@
 </div>
 
 <ul class="list-group">
-  {% for trip in trips %}
+  {% for trip in trips.items %}
   <li class="card mb-3">
     <div class="card-body">
       <h4 class="card-title">{{ trip.title }}</h4>
@@ -16,3 +16,6 @@
   </li>
   {% endfor %}
 </ul>
+
+
+{{ render_pagination(trips, uid=user.uid, tab="trips") }}

@@ -1,6 +1,6 @@
-{% if i_messages.count() %}
+{% if i_messages.total %}
 <ul class="list-group">
-  {% for message in i_messages.all() %}
+  {% for message in i_messages.items %}
   <li class="{{ 'jumbotron' if not message.id else '' }} card mb-3 p-0">
     <div class="card-body">
       <div class="d-flex justify-content-between align-items-center">
@@ -20,6 +20,9 @@
   </li>
   {% endfor %}
 </ul>
+
+{{ render_pagination(i_messages, tab="inbox", **query) }}
+
 {% else %}
 <i>You haven't received any messages yet.</i>
 {% endif %}

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, flash
+from flask import Blueprint, current_app, render_template, flash, request
 from .models import Trip, User
 from .forms.search import SearchForm
 
@@ -18,6 +18,8 @@ def icon():
 @home.route("/search")
 def search():
   form = SearchForm()
+
+  page = request.args.get("page", 1, type=int)
 
   if form.validate():
     t_query = {"bool": {"must": {}, "filter": []}}
@@ -127,6 +129,14 @@ def search():
     label = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     trips_id = {t.title:label[n % len(label)] for n, t in enumerate(trips.all())}
 
-    return render_template("main/search.html", form=form, trips=trips, users=users, dest={"dest":dest, "filtered":filtered}, trips_id=trips_id)
+    trips = trips.paginate(page, form.results_per_page.data, error_out=False)
+    users = users.paginate(page, form.results_per_page.data, error_out=False)
+
+    args = dict(request.args)
+    args.pop("page", None)
+    args.pop("tab", None)
+
+    return render_template("main/search.html", form=form, trips=trips, users=users, \
+      query=args, dest={"dest":dest, "filtered":filtered}, trips_id=trips_id)
   
   return render_template("main/search.html", form=form)

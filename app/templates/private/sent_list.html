@@ -1,6 +1,6 @@
-{% if s_messages.count() %}
+{% if s_messages.total %}
 <ul class="list-group">
-  {% for message in s_messages.all() %}
+  {% for message in s_messages.items %}
   <li class="card mb-3 p-0">
     <div class="card-body">
       <div class="d-flex justify-content-between align-items-center">
@@ -20,6 +20,8 @@
   </li>
   {% endfor %}
 </ul>
+
+{{ render_pagination(s_messages, tab="sent", **query) }}
 {% else %}
 <i>You haven't sent any messages yet.</i>
 {% endif %}

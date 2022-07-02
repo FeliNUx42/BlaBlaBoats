@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, current_app
 from flask_wtf import FlaskForm
 from wtforms import StringField, DateField, SelectField, DecimalField, IntegerField
 from wtforms.validators import DataRequired, Optional, NumberRange
@@ -15,7 +15,7 @@ class SearchForm(FlaskForm):
   boat_type = SelectField(label="Boat type", choices=("All", "Sailingboat", "Motorboat"), validators=[DataRequired()])
   sailing_mode = SelectField(label="Sailing mode", choices=("All", "Costal", "Offshore", "Regatta", "Boat Delivery"), validators=[DataRequired()])
   sort_by = SelectField(label="Sort by", choices=("Most relevant", "Nearest to location", "Alphabetically, A-Z", "Alphabetically, Z-A", "Created, new to old", "Created, old to new"), validators=[Optional()])
-  results_per_page = IntegerField(label="Results per page", validators=[Optional(), NumberRange(min=0, max=100)], default=25)
+  results_per_page = IntegerField(label="Results per page", validators=[Optional(), NumberRange(min=0, max=100)], default=lambda:current_app.config["RES_PER_PAGE"])
 
   def __init__(self, *args, **kwargs):
     if 'formdata' not in kwargs:

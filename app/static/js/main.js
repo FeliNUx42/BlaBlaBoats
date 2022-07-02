@@ -1,3 +1,16 @@
+// show tab if has tab in agrs
+function switchTab() {
+  let args = new URLSearchParams(document.location.search);
+  if (!args.has("tab")) return;
+
+  let tab = document.querySelector(`ul.nav-tabs .nav-link[href="#${args.get("tab")}"]`);
+  if (!tab) return;
+
+  $(tab).tab("show");
+}
+
+switchTab();
+
 // change filename
 $(".custom-file-input").on("change", function() {
   var fileName = $(this).val().split("\\").pop();

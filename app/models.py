@@ -10,7 +10,7 @@ from . import db
 class SearchableMixin(object):
   @classmethod
   def search(cls, query, sort, dest=False):
-    data = current_app.elasticsearch.search(index=cls.__tablename__, query=query, sort=sort)
+    data = current_app.elasticsearch.search(index=cls.__tablename__, query=query, sort=sort, size=1000)
     data = data.body
     
     ids = [int(hit["_id"]) for hit in data["hits"]["hits"]]

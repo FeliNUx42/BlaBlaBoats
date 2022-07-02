@@ -1,6 +1,6 @@
-{% if users.all() %}
+{% if users.total %}
 <ul class="list-group">
-  {% for user in users.all() %}
+  {% for user in users.items %}
   <li class="card mb-3">
     <div class="card-body">
       <div class="d-flex justify-content-between align-items-center">
@@ -19,6 +19,8 @@
   </li>
   {% endfor %}
 </ul>
+
+{{ render_pagination(users, tab="users", **query) }}
 {% else %}
-<p>There are no results for the search query: <i>{{ query }}</i></p>
+<p>There are no results for this search query.</p>
 {% endif %}

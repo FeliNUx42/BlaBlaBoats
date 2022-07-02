@@ -18,6 +18,7 @@
   <script src="{{ url_for('static', filename='js/dark_mode.js') }}" defer></script>
   <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
   {{ moment.include_moment() }}
+  {% from "layout/macros.html" import render_pagination with context %}
   <title>{% block title %}Home{% endblock %}</title>
 </head>
 

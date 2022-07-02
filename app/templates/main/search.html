@@ -22,13 +22,13 @@
   </div>
 </div>
 
-{% if (trips and users) %}
+{% if trips and users %}
 <ul class="nav nav-tabs">
   <li class="nav-item">
-    <a class="nav-link active" data-toggle="tab" href="#trip">Trips ({{ trips.count() }})</a>
+    <a class="nav-link active" data-toggle="tab" href="#trips">Trips ({{ trips.total }})</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" data-toggle="tab" href="#user">Users ({{ users.count() }})</a>
+    <a class="nav-link" data-toggle="tab" href="#users">Users ({{ users.total }})</a>
   </li>
   <li class="nav-item flex-grow-1">
     <button class="btn btn-info float-right" type="button" data-toggle="modal" data-target="#results-modal"
@@ -39,10 +39,10 @@
 <br>
 
 <div class="tab-content">
-  <div class="tab-pane container active p-0" id="trip">
+  <div class="tab-pane container active p-0" id="trips">
     {% include "main/trip_results.html" %}
   </div>
-  <div class="tab-pane container fade p-0" id="user">
+  <div class="tab-pane container fade p-0" id="users">
     {% include "main/user_results.html" %}
   </div>
 </div>
