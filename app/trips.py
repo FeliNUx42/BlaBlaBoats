@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from .models import Destination, Trip, Image
 from .forms.messages import MsgAboutForm
 from .forms.trips import CreateEditTripForm, DeleteTrip, AddImage, DeleteImage
-from .tools import save_picture, remove_picture, create_destination, create_place, delete_trip
+from .tools import save_picture, remove_picture, create_destination, create_place, delete_trip, confirmed_required
 from . import db
 import os
 
@@ -24,6 +24,7 @@ def trip_page(uid):
 
 @trips.route("/<uid>/edit", methods=["GET", "POST"])
 @login_required
+@confirmed_required
 def edit(uid):
   form = CreateEditTripForm()
   trip = Trip.query.filter_by(uid=uid).first_or_404()
@@ -87,6 +88,7 @@ def edit(uid):
 
 @trips.route("/create", methods=["GET", "POST"])
 @login_required
+@confirmed_required
 def create():
   form = CreateEditTripForm()
 
@@ -132,6 +134,7 @@ def create():
 
 @trips.route("/<uid>/delete", methods=["POST"])
 @login_required
+@confirmed_required
 def delete(uid):
   form = DeleteTrip()
   trip = Trip.query.filter_by(uid=uid).first_or_404()
@@ -152,6 +155,7 @@ def delete(uid):
 
 @trips.route("/<uid>/pictures", methods=["GET", "POST"])
 @login_required
+@confirmed_required
 def pictures(uid):
   add_form = AddImage()
   del_form = DeleteImage()

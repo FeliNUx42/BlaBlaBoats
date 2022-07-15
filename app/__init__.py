@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_moment import Moment
 from elasticsearch import Elasticsearch
+from sendgrid import SendGridAPIClient
 import stripe
 from .config import Config
 
@@ -27,6 +28,7 @@ def create_app():
   app.config.from_object(Config)
 
   app.elasticsearch = Elasticsearch(app.config["ELASTICSEARCH_URL"])
+  app.sendgrid = SendGridAPIClient(app.config["SENDGRID_API_KEY"])
 
   app.stripe = stripe
   app.stripe.api_key = app.config["STRIPE_SECRET_KEY"]

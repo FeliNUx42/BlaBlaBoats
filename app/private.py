@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from .models import Message
 from .forms.private import SettingsForm
 from .forms.search import MsgSearchForm
-from .tools import save_picture, remove_picture
+from .tools import confirmed_required, save_picture, remove_picture
 from . import db
 import os
 
@@ -21,6 +21,7 @@ def dashboard():
 
 @private.route('/settings', methods=["GET", "POST"])
 @login_required
+@confirmed_required
 def settings():
   form = SettingsForm()
 
@@ -49,6 +50,7 @@ def settings():
 
 @private.route("/inbox")
 @login_required
+@confirmed_required
 def inbox():
   form = MsgSearchForm()
 

@@ -1,0 +1,37 @@
+{% extends "layout/base.html" %}
+
+{% block title %}Verify Email{% endblock %}
+
+{% block content %}
+
+{% for field, errors in form.errors.items() %}
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+  {{ ', '.join(errors) }}
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+{% endfor %}
+
+<form class="form-horizontal" method="POST" action="">
+
+  <div class="form-group">
+    <h2>Verify Email</h2>
+  </div>
+
+  <p class="mb-4">
+    We're happy you signed up for BlaBlaBoat.
+    <br>
+    To start using this app you need to verify your email adress first.
+    <br>
+    If you haven't received a confirmation email, click thhe button down below.
+  </p>
+
+  {{ form.csrf_token() }}
+
+  <div class="form-group">
+    <div>{{ form.submit(class="btn btn-primary")}}</div>
+  </div>
+
+</form>
+{% endblock %}

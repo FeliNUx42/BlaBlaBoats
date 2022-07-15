@@ -81,7 +81,8 @@ class User(db.Model, UserMixin, SearchableMixin):
   }
   id = db.Column(db.Integer, primary_key=True)
   uid = db.Column(db.String(), unique=True)
-  email = db.Column(db.String(16), unique=True)
+  email = db.Column(db.String(16))
+  confirmed = db.Column(db.Boolean, default=False)
   username = db.Column(db.String(128), unique=True)
   first_name = db.Column(db.String(128))
   last_name = db.Column(db.String(128))

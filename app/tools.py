@@ -1,5 +1,7 @@
-from flask import current_app
+from flask import current_app, flash, redirect, url_for
+from flask_login import current_user
 from PIL import Image as PImage
+from functools import wraps
 from .models import Destination
 from .forms.trips import Place
 from . import db
@@ -50,3 +52,13 @@ def delete_trip(trip):
     db.session.delete(img)
   
   db.session.delete(trip)
+
+def confirmed_required(func):
+  @wraps(func)
+  def decorated_function(*args, **kwargs):
+    if not current_user.confirmed:
+      flash("Please verify your account.", "danger")
+      return redirect(url_for("auth.unconfirmed"))
+    return func(*args, **kwargs)
+  
+  return decorated_function

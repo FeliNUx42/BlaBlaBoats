@@ -1,8 +1,10 @@
 venv
 .env
+.sass-cache
 test.py
 __pycache__
 app/__pycache__
 app/database.db
 app/static/pictures/*
 !app/static/pictures/default.png
+app/templates/emails/compiled/*

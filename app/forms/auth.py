@@ -25,6 +25,10 @@ class SignupForm(FlaskForm):
       raise ValidationError("This Email Address is already taken.")
 
 
+class ConfirmForm(FlaskForm):
+  submit = SubmitField("Resend Confirmation Email")
+
+
 class LoginForm(FlaskForm):
   username = StringField(label="Username:", validators=[DataRequired(), Length(4, 128)])
   password = PasswordField("Password:", validators=[DataRequired(), Length(8, 128)])
