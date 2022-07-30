@@ -5,7 +5,7 @@ from .models import User, Message, Trip
 from .tools import confirmed_required
 from .forms.messages import MsgAboutForm, MsgContactForm, MsgReplyForm
 from . import db
-import os, re
+import os
 
 
 messages = Blueprint("messages", __name__)
@@ -98,8 +98,10 @@ def reply():
     m.reply = replying_to
     m.receiver = replying_to.sender
 
-    m.subject = "Re: " + replying_to.subject
-    m.subject = "Re: " + re.sub("^Re: ", "", replying_to.subject)
+    if replying_to.subject.startswith("Re: "):
+      m.subject = replying_to.subject
+    else:
+      m.subject = "Re: " + replying_to.subject
 
     db.session.add(m)
     db.session.commit()

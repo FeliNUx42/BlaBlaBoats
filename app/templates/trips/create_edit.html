@@ -31,6 +31,9 @@
       <i class="lni lni-circle-plus text-collapsed"></i>
       <i class="lni lni-circle-minus text-expanded"></i>
       {{ form.description.label.text }}
+      <a href="javascript:void(0)" title="Trip Description" data-toggle="popover" data-trigger="hover"
+      data-content="You can talk about: <ul><li>what kind of people you are looking for</li><li>what expences will be paid by whom</li><li>additional informations...</li></ul>">
+      (more Information)</a>
     </h3>
     <div class="collapse show m-3 form-group" id="desc" data-parent="#accordion">
       <div>{{ form.description(class="form-control", rows="8") }}</div>

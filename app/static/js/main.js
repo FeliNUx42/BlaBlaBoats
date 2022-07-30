@@ -25,6 +25,9 @@ $("*[max-length]").each(function() {
   }
 });
 
+// initialise popovers (https://getbootstrap.com/docs/4.0/components/popovers/)
+$('[data-toggle="popover"]').popover({ html: true });
+
 // app/donate.py
 function select_value(btn) {
   for (let i = 0; i < btn.parentNode.children.length; i++) {

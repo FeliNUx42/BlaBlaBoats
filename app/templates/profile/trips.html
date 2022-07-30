@@ -3,6 +3,8 @@
   <a href="{{ url_for('trips.create') }}" class="btn btn-primary">Create a new Trip</a>
 </div>
 
+{% if trips.items %}
+
 <ul class="list-group">
   {% for trip in trips.items %}
   <li class="card mb-3">
@@ -17,5 +19,10 @@
   {% endfor %}
 </ul>
 
-
 {{ render_pagination(trips, uid=user.uid, tab="trips") }}
+
+{% elif user == current_user %}
+<i>You haven't created any messages yet. Create your first trip by clicking on the button "Create a new Trip".</i>
+{% else %}
+<i>This user hasn't created any messages yet.</i>
+{% endif %}

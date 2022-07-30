@@ -264,15 +264,15 @@
 }
 .dark-mode .nav-tabs .nav-link:focus,
 .dark-mode .nav-tabs .nav-link:hover {
-  background-color: #242424;
+  background-color: #121212;
   border-color: #404040;
 }
 .dark-mode .nav-tabs .nav-item.show .nav-link,
 .dark-mode .nav-tabs .nav-link.active {
   color: #bebebe;
-  background-color: #222;
+  background-color: #121212;
   border-color: #404040;
-  border-bottom-color: #222;
+  border-bottom-color: #121212;
 }
 .dark-mode .nav-tabs.card-header-tabs .nav-item.show .nav-link,
 .dark-mode .nav-tabs.card-header-tabs .nav-link.active {
