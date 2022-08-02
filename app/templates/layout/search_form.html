@@ -1,6 +1,6 @@
 <form class="jumbotron pb-4 pt-4 mb-4" action="" method="get">
   <div class="input-group">
-    {{ form.q(class="form-control", placeholder="Search for trips, users... (leave empty too get all results)", autocomplete="off") }}
+    {{ form.q(class="form-control", placeholder="Search for trips, users... (leave empty to get all results)", autocomplete="off") }}
     <div class="input-group-append">
       <button class="btn btn-info text-toggle" type="button" data-toggle="collapse" data-target="#filters" style="border-right: 4px solid #343a40;"  aria-expanded="false">
         <span class="text-collapsed">Show filters</span>
@@ -53,6 +53,10 @@
         <span class="input-group-text">{{ form.sailing_mode.label.text }}</span>
       </div>
       {{ form.sailing_mode(class="custom-select") }}
+      <div class="input-group-append input-group-prepend">
+        <span class="input-group-text">{{ form.people.label.text }}</span>
+      </div>
+      {{ form.people(class="form-control") }}
       <div class="input-group-append">
         <button class="btn btn-info" type="button" onclick="clearType(types)">Reset</button>
       </div>

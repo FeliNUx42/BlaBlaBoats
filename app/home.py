@@ -27,9 +27,10 @@ def search():
     has_query = bool(form.q.data)
     has_location = bool(form.lat.data is not None and form.lng.data is not None and form.dist.data)
     location_sort = bool(form.lat.data is not None and form.lng.data is not None)
-    has_dates = bool(form.start_date.data and form.end_date)
+    has_dates = bool(form.start_date.data and form.end_date.data)
     has_type = bool(form.boat_type.data.replace("All", ""))
     has_mode = bool(form.sailing_mode.data.replace("All", ""))
+    has_people = bool(form.people.data)
 
     if has_query:
       t_query["bool"]["must"]["multi_match"] = {
@@ -88,9 +89,18 @@ def search():
       })
 
     if has_mode:
-       t_query["bool"]["filter"].append({
+      t_query["bool"]["filter"].append({
         "term": {
           "sailing_mode": form.sailing_mode.data
+        }
+      })
+
+    if has_people:
+      t_query["bool"]["filter"].append({
+        "range": {
+          "places": {
+            "gte": form.people.data
+          }
         }
       })
 

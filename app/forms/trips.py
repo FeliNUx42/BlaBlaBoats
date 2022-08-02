@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import Form, StringField, TextAreaField, DateField, SelectField, SubmitField, FileField, FieldList, FormField, HiddenField, DecimalField
-from wtforms.validators import DataRequired, Length, Optional
+from wtforms import Form, StringField, TextAreaField, DateField, SelectField, SubmitField, FileField, FieldList, FormField, HiddenField, DecimalField, IntegerField
+from wtforms.validators import DataRequired, Length, Optional, NumberRange
 from flask_wtf.file import FileAllowed
 
 
@@ -20,7 +20,7 @@ class CreateEditTripForm(FlaskForm):
   boat_type = SelectField(label="Boat type", choices=("Sailingboat", "Motorboat"), validators=[DataRequired()])
   boat_model = StringField(label="Boat model", validators=[DataRequired(), Length(max=10)])
   sailing_mode = SelectField(label="Sailing mode", choices=("Costal", "Offshore", "Regatta", "Boat Delivery"), validators=[DataRequired()])
-  travel_expenses = StringField(label="Travel expenses", validators=[DataRequired(), Length(max=64)])
+  places = IntegerField(label="Available places left", validators=[DataRequired(), NumberRange(min=1, max=127)])
   qualif_level = StringField(label="Qualification level required", validators=[DataRequired(), Length(max=64)])
   submit = SubmitField("Create Trip")
 

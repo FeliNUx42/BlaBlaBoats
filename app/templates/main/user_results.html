@@ -8,7 +8,7 @@
         <div class="ml-5">
           <img src="{{ url_for('static', filename='pictures/'+user.profile_pic) }}" class="rounded-circle mr-2"
             style="width:32px; height: 32px; object-fit: cover;">
-          <span>Joined on {# moment(user.created).format("DD MMM, YYYY") #}</span>
+          <span>Joined on {{ moment(user.created).format("DD MMM, YYYY") }}</span>
         </div>
       </div>
       <p class="card-text" max-length="400">

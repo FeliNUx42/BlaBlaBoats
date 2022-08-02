@@ -14,6 +14,7 @@ class SearchForm(FlaskForm):
   end_date = DateField(validators=[Optional()])
   boat_type = SelectField(label="Boat type", choices=("All", "Sailingboat", "Motorboat"), validators=[DataRequired()])
   sailing_mode = SelectField(label="Sailing mode", choices=("All", "Costal", "Offshore", "Regatta", "Boat Delivery"), validators=[DataRequired()])
+  people = IntegerField(label="People", validators=[Optional(), NumberRange(min=1, max=127)])
   sort_by = SelectField(label="Sort by", choices=("Most relevant", "Nearest to location", "Alphabetically, A-Z", "Alphabetically, Z-A", "Created, new to old", "Created, old to new"), validators=[Optional()])
   results_per_page = IntegerField(label="Results per page", validators=[Optional(), NumberRange(min=0, max=100)], default=lambda:current_app.config["RES_PER_PAGE"])
 

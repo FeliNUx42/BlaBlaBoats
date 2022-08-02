@@ -38,7 +38,7 @@ def edit(uid):
     trip.boat_type = form.boat_type.data
     trip.boat_model = form.boat_model.data
     trip.sailing_mode = form.sailing_mode.data
-    trip.travel_expenses = form.travel_expenses.data
+    trip.places = form.places.data
     trip.qualif_level = form.qualif_level.data
 
     if form.banner.data:
@@ -66,7 +66,7 @@ def edit(uid):
   form.boat_type.data = trip.boat_type
   form.boat_model.data = trip.boat_model
   form.sailing_mode.data = trip.sailing_mode
-  form.travel_expenses.data = trip.travel_expenses
+  form.places.data = trip.places
   form.qualif_level.data = trip.qualif_level
 
   form.dest.pop_entry()
@@ -101,7 +101,7 @@ def create():
     trip.boat_type = form.boat_type.data
     trip.boat_model = form.boat_model.data
     trip.sailing_mode = form.sailing_mode.data
-    trip.travel_expenses = form.travel_expenses.data
+    trip.places = form.places.data
     trip.qualif_level = form.qualif_level.data
 
     db.session.add(trip)

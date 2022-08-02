@@ -13,7 +13,8 @@ const dates = {
 
 const types = {
   boat_type: document.querySelector("select#boat_type"),
-  sailing_mode: document.querySelector("select#sailing_mode")
+  sailing_mode: document.querySelector("select#sailing_mode"),
+  people: document.querySelector("input#people")
 }
 
 
@@ -30,7 +31,8 @@ function clearDate({ start_date, end_date }) {
   end_date.value = "";
 }
 
-function clearType({ boat_type, sailing_mode }) {
+function clearType({ boat_type, sailing_mode, people }) {
   boat_type.value = "All";
   sailing_mode.value = "All";
+  people.value = "";
 }

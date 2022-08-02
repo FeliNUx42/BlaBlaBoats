@@ -82,6 +82,7 @@ class User(db.Model, UserMixin, SearchableMixin):
   id = db.Column(db.Integer, primary_key=True)
   uid = db.Column(db.String(), unique=True)
   email = db.Column(db.String(16))
+  created = db.Column(db.DateTime(timezone=True), default=datetime.utcnow)
   confirmed = db.Column(db.Boolean, default=False)
   username = db.Column(db.String(128), unique=True)
   first_name = db.Column(db.String(128))
@@ -183,7 +184,7 @@ class Destination(db.Model):
 
 
 class Trip(db.Model, SearchableMixin):
-  __indexing__ = ["uid", "title", "description", "boat_type", "boat_model", "sailing_mode", "created", "destinations"]
+  __indexing__ = ["uid", "title", "description", "boat_type", "boat_model", "sailing_mode", "places", "created", "destinations"]
   __searchable__ = ["uid", "title", "description", "boat_model"]
   __mapping__ = {
     "properties": {
@@ -193,6 +194,7 @@ class Trip(db.Model, SearchableMixin):
       "boat_type": {"type": "keyword"},
       "boat_model": {"type": "text"},
       "sailing_mode": {"type": "keyword"},
+      "places": {"type": "byte"},
       "created": {"type": "date"},
       "destinations": Destination.__mapping__
     }
@@ -204,7 +206,7 @@ class Trip(db.Model, SearchableMixin):
   boat_type = db.Column(db.String(64))
   boat_model = db.Column(db.String(64))
   sailing_mode = db.Column(db.String(64))
-  travel_expenses = db.Column(db.String(64))
+  places = db.Column(db.Integer)
   qualif_level = db.Column(db.String(64))
   created = db.Column(db.DateTime(timezone=True), default=datetime.utcnow)
 
