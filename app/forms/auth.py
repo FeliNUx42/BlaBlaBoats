@@ -11,7 +11,7 @@ class SignupForm(FlaskForm):
   first_name = StringField(label="First Name:", validators=[DataRequired(), Length(4, 128)])
   last_name = StringField(label="Last Name:", validators=[DataRequired(), Length(4, 128)])
   password = PasswordField(label="Password:", validators=[DataRequired(), Length(8, 128)])
-  r_password = PasswordField(label="Repeate password:", validators=[DataRequired(), EqualTo("password"), Length(8, 128)])
+  r_password = PasswordField(label="Repeat password:", validators=[DataRequired(), EqualTo("password"), Length(8, 128)])
   submit = SubmitField("Sign Up")
 
   def validate_username(self, username):
@@ -29,6 +29,17 @@ class ConfirmForm(FlaskForm):
   submit = SubmitField("Resend Confirmation Email")
 
 
+class  ResetRequestForm(FlaskForm):
+  email = StringField("Email Address: ", validators=[DataRequired(), Email(), Length(4, 128)])
+  submit = SubmitField("Reset Password")
+
+
+class  ResetPasswordForm(FlaskForm):
+  password = PasswordField(label="New Password:", validators=[DataRequired(), Length(8, 128)])
+  r_password = PasswordField(label="Repeat password:", validators=[DataRequired(), EqualTo("password"), Length(8, 128)])
+  submit = SubmitField("Save Password")
+
+
 class LoginForm(FlaskForm):
   username = StringField(label="Username:", validators=[DataRequired(), Length(4, 128)])
   password = PasswordField("Password:", validators=[DataRequired(), Length(8, 128)])
@@ -44,7 +55,7 @@ class LoginForm(FlaskForm):
 class ChangePasswordForm(FlaskForm):
   o_password = PasswordField(label="Old Password:", validators=[DataRequired(), Length(8, 128)])
   n_password = PasswordField(label="New Password:", validators=[DataRequired(), Length(8, 128)])
-  r_password = PasswordField(label="Repeate New Password:", validators=[DataRequired(), EqualTo("n_password"), Length(8, 128)])
+  r_password = PasswordField(label="Repeat New Password:", validators=[DataRequired(), EqualTo("n_password"), Length(8, 128)])
   submit = SubmitField("Change Password")
 
   def validate_o_password(self, o_password):

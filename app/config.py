@@ -22,3 +22,4 @@ class Config:
   MAPS_LIGHT_ID = os.environ.get("MAPS_LIGHT_ID")
 
   SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY")
+  SENDGRID_EMAIL = os.environ.get("SENDGRID_EMAIL")
