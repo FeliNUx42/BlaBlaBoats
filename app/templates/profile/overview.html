@@ -1,1 +1,38 @@
-<h1>Hello</h1>
+<h1>Profile of <i>{{ user.username }}</i></h1>
+
+<div class="row mt-4 mb-4">
+  <div class="col">
+    <h5 style="font-size:16px">Username</h5>
+    <p style="font-size:18px; font-weight:bold">{{ user.username }}</p>
+  </div>
+  <div class="col">
+    <h5 style="font-size:16px">Full Name</h5>
+    <p style="font-size:18px; font-weight:bold">{{ user.full_name }}</p>
+  </div>
+</div>
+<div class="row mb-4">
+  <div class="col">
+    <h5 style="font-size:16px">Description</h5>
+    <p style="font-size:18px; font-weight:bold">{{ user.description }}</p>
+  </div>
+</div>
+<div class="row mb-4">
+  <div class="col">
+    <h5 style="font-size:16px">Total trips created</h5>
+    <p style="font-size:18px; font-weight:bold">{{ user.total_trips }}</p>
+  </div>
+  <div class="col">
+    <h5 style="font-size:16px">Available trips</h5>
+    <p style="font-size:18px; font-weight:bold">{{ user.trips.count() }}</p>
+  </div>
+</div>
+<div class="row mb-4">
+  <div class="col">
+    <h5 style="font-size:16px">Joined on</h5>
+    <p style="font-size:18px; font-weight:bold">{{ moment(user.created).format("DD MMMM, YYYY") }}</p>
+  </div>
+  <div class="col">
+    <h5 style="font-size:16px">Donator</h5>
+    <p style="font-size:18px; font-weight:bold">{{ user.donator and "Yes" or "No" }}</p>
+  </div>
+</div>

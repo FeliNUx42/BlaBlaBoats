@@ -105,6 +105,7 @@ def create():
     trip.qualif_level = form.qualif_level.data
 
     db.session.add(trip)
+    current_user.total_trips += 1
 
     if form.banner.data:
       filename = os.urandom(8).hex() + os.path.splitext(form.banner.data.filename)[-1]

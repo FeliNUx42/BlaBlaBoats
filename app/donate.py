@@ -2,6 +2,7 @@ from flask import Blueprint, current_app, flash, redirect, render_template, requ
 from flask_login import current_user
 from .forms.donate import DonateForm
 import locale
+from . import db
 
 
 locale.setlocale(locale.LC_MONETARY, 'de_CH.UTF-8')
@@ -45,6 +46,10 @@ def donate_page():
 @donate.route("/success")
 def success():
   session = current_app.stripe.checkout.Session.retrieve(request.args["id"])
+
+  if current_user.is_authenticated:
+    current_user.donator = True
+    db.session.commit()
 
   value = locale.currency(session.amount_total / 100)
   flash(f"Thank you for donating {value} to BlaBlaBoat.", "success")
