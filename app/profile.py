@@ -16,6 +16,6 @@ def user_page(uid):
   if user == current_user:
     return redirect(url_for("private.dashboard"))
   
-  trips = user.trips.paginate(page=page, per_page=current_app.config["RES_PER_PAGE"])
+  trips = user.trips.paginate(page=page, per_page=current_app.config["RES_PER_PAGE"]/2)
 
   return render_template("profile/prof.html", user=user, trips=trips, form=form)

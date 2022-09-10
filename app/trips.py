@@ -1,4 +1,4 @@
-from flask import Blueprint, abort, render_template, redirect, url_for, flash, request
+from flask import Blueprint, abort, render_template, redirect, url_for, flash, request, current_app
 from flask_login import login_required, current_user
 from .models import Destination, Trip, Image
 from .forms.messages import MsgAboutForm
@@ -91,6 +91,10 @@ def edit(uid):
 @confirmed_required
 def create():
   form = CreateEditTripForm()
+
+  if current_user.trips.count() >= current_app.config["MAX_TRIPS"]:
+    flash(f'You cannot create more than { current_app.config["MAX_TRIPS"] } trips. Please delete old trips...', "danger")
+    return redirect(url_for("private.dashboard"))
 
   if form.validate_on_submit():
     trip = Trip()

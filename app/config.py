@@ -8,6 +8,7 @@ class Config:
   RES_PER_PAGE = 10
   PICTURES_FOLDER = "static/pictures"
   MAX_CONTENT_LENGTH = 16 * 1024 * 1024
+  MAX_TRIPS = 20
 
   SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', "sqlite:///database.db")
   SQLALCHEMY_TRACK_MODIFICATIONS = False
