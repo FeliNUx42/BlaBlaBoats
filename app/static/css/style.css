@@ -33,3 +33,10 @@ a.disabled{
   opacity: 0.5;
   text-decoration: none;
 }
+
+.custom-card-image {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-radius: calc(.25rem - 1px) 0 0 calc(.25rem - 1px);
+}

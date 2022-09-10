@@ -1,8 +1,11 @@
 {% if trips.total %}
 <ul class="list-group">
   {% for trip in trips.items %}
-  <li class="card mb-3">
-    <div class="card-body">
+  <li class="card flex-row mb-4 align-items-stretch">
+    <div class="card-header border-0 custom-card-image"
+      style="width: 30%; background-image: url('{{ url_for('static', filename='pictures/'+trip.banner) }}')">
+    </div>
+    <div class="card-body" style="width: 70%;">
       <div class="d-flex justify-content-between align-items-center">
         <h4 class="card-title">{{ trip.title }}</h4>
         <div class="ml-5">
@@ -11,7 +14,7 @@
           <span><b>{{ trip.skipper.username }}</b>, Created on {{ moment(trip.created).format("DD MMM, YYYY") }}</span>
         </div>
       </div>
-      <p class="card-text" max-length="400">
+      <p class="card-text" max-length="500">
         {{ trip.description }}
       </p>
       <a href="{{ url_for('trips.trip_page', uid=trip.uid)}}" class="card-link stretched-link">More Details</a>
