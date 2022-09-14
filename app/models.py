@@ -81,7 +81,8 @@ class User(db.Model, UserMixin, SearchableMixin):
   }
   id = db.Column(db.Integer, primary_key=True)
   uid = db.Column(db.String(), unique=True)
-  email = db.Column(db.String(16))
+  admin = db.Column(db.Boolean, default=False)
+  email = db.Column(db.String(128))
   created = db.Column(db.DateTime(timezone=True), default=datetime.utcnow)
   confirmed = db.Column(db.Boolean, default=False)
   username = db.Column(db.String(128), unique=True)
@@ -127,7 +128,7 @@ class User(db.Model, UserMixin, SearchableMixin):
     return User.query.get(data['user_id']), data['command']
 
   def __repr__(self):
-    return f'<User({self.id}, {self.uid}, {self.username})>'
+    return f'<User({self.uid}, {self.username})>'
 
 
 class Destination(db.Model):
@@ -183,7 +184,7 @@ class Destination(db.Model):
     }
 
   def __repr__(self):
-    return f'<Destination({self.id}, {self.name})>'
+    return f'<Destination({self.name})>'
 
 
 class Trip(db.Model, SearchableMixin):
@@ -204,13 +205,13 @@ class Trip(db.Model, SearchableMixin):
   }
   id = db.Column(db.Integer, primary_key=True)
   uid = db.Column(db.String(16), unique=True)
-  title = db.Column(db.String(72), unique=True)
+  title = db.Column(db.String(128), unique=True)
   description = db.Column(db.String(2048), default="This user does not have a description...")
-  boat_type = db.Column(db.String(64))
-  boat_model = db.Column(db.String(64))
-  sailing_mode = db.Column(db.String(64))
+  boat_type = db.Column(db.String(128))
+  boat_model = db.Column(db.String(128))
+  sailing_mode = db.Column(db.String(128))
   places = db.Column(db.Integer)
-  qualif_level = db.Column(db.String(64))
+  qualif_level = db.Column(db.String(128))
   created = db.Column(db.DateTime(timezone=True), default=datetime.utcnow)
 
   user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
@@ -221,7 +222,7 @@ class Trip(db.Model, SearchableMixin):
   messages = db.relationship("Message", backref="trip", lazy="dynamic")
 
   def __repr__(self):
-    return f'<Trip({self.id}, {self.uid}, {self.title})>'
+    return f'<Trip({self.uid}, {self.title})>'
 
 
 class Image(db.Model):
@@ -246,7 +247,7 @@ class Message(db.Model, SearchableMixin):
   }
   id = db.Column(db.Integer, primary_key=True)
   uid = db.Column(db.String(16), unique=True)
-  subject = db.Column(db.String(64))
+  subject = db.Column(db.String(128))
   text = db.Column(db.String(2048))
   created = db.Column(db.DateTime(timezone=True), default=datetime.utcnow)
   read = db.Column(db.Boolean, default=False)
@@ -269,3 +270,6 @@ class Message(db.Model, SearchableMixin):
   
   @property
   def reply_uid(self): return self.reply.uid if self.reply else None
+
+  def __repr__(self):
+    return f'<Message({self.uid}, {self.subject})>'

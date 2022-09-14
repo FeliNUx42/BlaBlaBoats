@@ -1,15 +1,18 @@
 from flask import Flask, current_app, g
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask_admin import Admin
 from flask_moment import Moment
 from elasticsearch import Elasticsearch
 from sendgrid import SendGridAPIClient
 import stripe
 from .config import Config
+from .adminViews import IndexView
 
 
 db = SQLAlchemy()
 moment = Moment()
+admin = Admin(name='Admin Panel', template_mode='bootstrap4', index_view=IndexView(), base_template="layout/admin.html")
 
 login_manager = LoginManager()
 login_manager.login_view = "auth.login"
@@ -22,6 +25,7 @@ def load_user(id):
 
 def create_app():
   from .models import User, Trip, Destination, Image, Message
+  from .adminViews import UserView, TripView, MessageView
   from .forms.search import SearchForm
   app = Flask(__name__)
 
@@ -33,8 +37,10 @@ def create_app():
   app.stripe = stripe
   app.stripe.api_key = app.config["STRIPE_SECRET_KEY"]
 
+
   db.init_app(app)
   db.create_all(app=app)
+
   login_manager.init_app(app)
   moment.init_app(app)
 
@@ -42,11 +48,18 @@ def create_app():
   def globals():
     return {
       "search_form": SearchForm(),
+      "User": User,
       "Trip": Trip,
+      "Message": Message,
       "enumerate": enumerate,
       "len": len,
       "current_app": current_app
     }
+
+  admin.add_view(UserView(User, db.session))
+  admin.add_view(TripView(Trip, db.session))
+  admin.add_view(MessageView(Message, db.session))
+  admin.init_app(app)
 
 
   from .home import home

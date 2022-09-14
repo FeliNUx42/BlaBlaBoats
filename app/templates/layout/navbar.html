@@ -1,0 +1,72 @@
+<nav class="navbar navbar-expand-lg bg-dark navbar-dark sticky-top">
+  <div class="container">
+    <a href="{{ url_for('home.index') }}" class="navbar-brand">
+      <img src="{{ url_for('static', filename='logo.png') }}" alt="" height="27px" class="mr-2">
+      BlaBlaBoat
+    </a>
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('home.index')}}">Home</a>
+        </li>
+        <!--<li class="nav-item">
+          <a class="nav-link" href="#">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Contact</a>
+        </li>-->
+        {% if current_user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+            {{ current_user.username }}
+          </a>
+          <div class="dropdown-menu dropdown-menu-dark">
+            {% if current_user.admin %}
+            <a class="dropdown-item" href="/admin/">Admin Panel</a>
+            {% endif %}
+            <a class="dropdown-item" href="{{ url_for('private.dashboard') }}">Dashboard</a>
+            <a class="dropdown-item" href="{{ url_for('private.inbox') }}">Inbox</a>
+            <a class="dropdown-item" href="{{ url_for('private.settings') }}">Settings</a>
+            <a class="dropdown-item" href="{{ url_for('auth.security') }}">Change Password</a>
+          </div>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('auth.login') }}">Log In</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('auth.signup') }}">Sign Up</a>
+        </li>
+        {% endif %}
+        <li class="nav-item">
+          <a href="{{ url_for('donate.donate_page') }}" class="nav-link"><span
+              class="btn btn-secondary m-0 text-dark d-inline donate"
+              style="border-width: 2px !important;">Donate</span></a>
+        </li>
+      </ul>
+      <div class="custom-control custom-switch mr-3">
+        <input type="checkbox" name="dark-mode-switch" id="dark-mode-switch" class="custom-control-input">
+        <label for="dark-mode-switch" class="custom-control-label custom-nav-link">Dark Mode</label>
+      </div>
+      <form class="form-inline my-2 my-lg-0" method="get" action="{{ url_for('home.search') }}">
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span class="input-group-text"><i class="lni lni-search-alt"></i></span>
+          </div>
+          {{ search_form.q(class="form-control", placeholder="Search", autocomplete="off", required=True) }}
+        </div>
+          {{ search_form.unit(hidden=True, id="") }}
+          {{ search_form.boat_type(hidden=True, id="") }}
+          {{ search_form.sailing_mode(hidden=True, id="") }}
+      </form>
+    </div>
+  </div>
+</nav>

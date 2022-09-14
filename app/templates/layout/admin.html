@@ -1,0 +1,19 @@
+{% extends "admin/base.html" %}
+
+{% block title %}
+  Admin Panel
+{% endblock %}
+
+{% block head %}
+  {% include "layout/imports.html" %}
+{% endblock %}
+
+{% block page_body %}
+  <div style="min-height: 100vh;">
+    {% include "layout/navbar.html" %}
+    <div style="height: 2px;" class="bg-secondary"></div>
+    <div class="bg-dark navbar" style="position:absolute; z-index:-1; height: 56px; width: 100vw;" ></div>
+    {{ super() }}
+  </div>
+  {% include "layout/footer.html" %}
+{% endblock %}

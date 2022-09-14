@@ -1,0 +1,43 @@
+<footer class="jumbotron jumbotron-fluid p-0 text-center" style="margin-bottom: 0;">
+  <div class="row p-3 pt-4" style="width:100vw;">
+    <div class="col-md-3 text-center">
+      <img src="{{ url_for('static', filename='logo.png') }}" alt="" class="my-3" style="width: 100px; height:100px;">
+      <h5 class="">BlaBlaBoat</h5>
+    </div>
+    <div class="col-md-3">
+      <h5 class="text-uppercase">About Us</h5>
+      <ul class="list-unstyled">
+        <li><a href="{{ url_for('home.index') }}#contact" class="">Contact Us</a></li>
+        <li><a href="{{ url_for('home.index') }}#faq" class="">FAQs</a></li>
+        <li><a href="" class="disabled">Terms of Service</a></li>
+        <li><a href="" class="disabled">Privacy Policy</a></li>
+        <li><a href="" class="disabled">Cookie Preferences</a></li>
+      </ul>
+    </div>
+    <div class="col-md-3">
+      <h5 class="text-uppercase">Social Media</h5>
+      <ul class="list-unstyled">
+        <li><a href="" class="disabled"><i class="fa fa-instagram"></i> Instagram</a></li>
+        <li><a href="" class="disabled"><i class="fa fa-facebook-official"></i> Facebook</a></li>
+        <li><a href="" class="disabled"><i class="fa fa-youtube-play"></i> Youtube</a></li>
+        <li><a href="" class="disabled"><i class="fa fa-twitter"></i> Twitter</a></li>
+        <li><a href="https://github.com/FeliNUx42/BlaBlaBoat" class=""><i class="fa fa-github"></i> Github</a></li>
+      </ul>
+    </div>
+    <div class="col-md-3">
+      <h5 class="text-uppercase">My Account</h5>
+      <ul class="list-unstyled">
+        {% if not current_user.is_authenticated %}
+        <li><a href="{{ url_for('auth.signup') }}" class="">Sign Up</a></li>
+        <li><a href="{{ url_for('auth.login') }}" class="">Log In</a></li>
+        {% else %}
+        <li><a href="{{ url_for('private.dashboard') }}" class="">Dashboard</a></li>
+        <li><a href="{{ url_for('private.settings') }}" class="">Settings</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+  <div class="bg-secondary bg-darkmode-black py-3 text-center nav-link" style="color: rgba(255,255,255,.7);">
+    © 2020 Copyright: <a href="{{ url_for('home.index') }}" class="text-light">Félix Bommier</a>
+  </div>
+</footer>
