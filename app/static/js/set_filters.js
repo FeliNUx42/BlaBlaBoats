@@ -7,7 +7,7 @@ const M_TO_MI = 1609.344;
 const M_TO_NMI = 1852;
 
 const filterMapElement = document.querySelector("#map-modal #map");
-const filterOsm = L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
+const filterOsm = L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {className: "map-tiles"});
 
 const filterDefaultLocation = { lat: 50, lng: 0 };
 const filterZoom = 6;

@@ -2,7 +2,7 @@ var trips_map;
 var poly;
 
 const tripMapElement = document.querySelector("#destinations-modal #map");
-const t_osm = L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
+const t_osm = L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {className: "map-tiles"});
 const markerLayer = L.layerGroup();
 
 const tripsTitle = document.querySelector("#destinations-modal .modal-title");

@@ -1,7 +1,7 @@
 var result_map;
 
 const resultsMapElement = document.querySelector("#results");
-const r_osm = L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
+const r_osm = L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {className: "map-tiles"});
 
 const resultsDefaultLocation = { lat: 50, lng: 0 };
 const resultsZoom = 6;

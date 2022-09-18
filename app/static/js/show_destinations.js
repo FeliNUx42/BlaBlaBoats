@@ -2,7 +2,7 @@ var map;
 var poly;
 
 const mapElement = document.querySelector("#map-modal #map");
-const osm = L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
+const osm = L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {className: "map-tiles"});
 
 const title = document.querySelector("#map-modal .modal-title");
 const defaultLocation = { lat: 50, lng: 0 };
