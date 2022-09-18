@@ -1,17 +1,18 @@
 var map;
 var circle;
+var last_pos;
 
 const M_TO_KM = 1000;
 const M_TO_MI = 1609.344;
 const M_TO_NMI = 1852;
 
 const filterMapElement = document.querySelector("#map-modal #map");
+const filterOsm = L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
+
 const filterDefaultLocation = { lat: 50, lng: 0 };
 const filterZoom = 6;
 
-const circleColor = "#343a40";
 const defaultRadius = 150 * M_TO_KM;
-const maxRadius = 3000 * M_TO_KM;
 
 // bounds defined in ./clear_filters.js
 // darkMode defined in ./dark_mode.js
@@ -21,6 +22,13 @@ function openFilterMap({ dist, unit }) {
   if (!map) createFilterMap();
   if (!circle) createFilterCircle();
 
+  setTimeout(() => {
+    map.invalidateSize();
+  }, 300);
+
+  circle.disableEdit();
+  circle.setLatLng({...last_pos});
+  circle.enableEdit();
   let r = 0;
 
   if (unit.value == "km") r = Number(dist.value) * M_TO_KM;
@@ -31,46 +39,21 @@ function openFilterMap({ dist, unit }) {
 }
 
 function createFilterMap() {
-  navigator.geolocation.getCurrentPosition(centerMap)
-
-  map = new google.maps.Map(filterMapElement, {
-    mapId: MAP_IDS.at(darkMode),
-    zoom: filterZoom,
+  map = L.map(filterMapElement, {
+    editable: true,
     center: filterDefaultLocation,
-    mapTypeControl: false,
-    streetViewControl: false,
-    rotateControl: false
+    zoom: filterZoom
   });
+
+  filterOsm.addTo(map);
 }
 
 function createFilterCircle() {
-  circle = new google.maps.Circle({
-    strokeColor: circleColor,
-    strokeOpacity: 0.8,
-    strokeWeight: 1,
-    fillColor: circleColor,
-    fillOpacity: 0.3,
-    center: { lat: map.center.lat(), lng: map.center.lng() },
-    radius: defaultRadius,
-    editable: true,
-    draggable: true
-  });
+  circle = L.circle(map.getCenter(), {radius: defaultRadius});
+  circle.addTo(map);
+  circle.enableEdit();
 
-  circle.setMap(map);
-
-  circle.addListener("bounds_changed", () => {
-    if (circle.radius > maxRadius) circle.setRadius(maxRadius);
-  });
-}
-
-function centerMap(location) {
-  pos = {
-    lat: location.coords.latitude,
-    lng: location.coords.longitude
-  }
-
-  map.setCenter(pos);
-  circle.setCenter(pos);
+  last_pos = {...circle.getLatLng()};
 }
 
 function setBoundaries({ lat, lng, dist, unit, btn }) {
@@ -82,8 +65,11 @@ function setBoundaries({ lat, lng, dist, unit, btn }) {
 
   dist.value = r.toFixed();
 
-  lat.value = _lat = circle.center.lat();
-  lng.value = _lng = circle.center.lng();
+  let pos = circle.getLatLng();
+  last_pos = {...pos}
 
-  btn.innerHTML = `lat: ${_lat.toFixed(2)}, lng: ${_lng.toFixed(2)}`;
+  lat.value = pos.lat;
+  lng.value = pos.lng;
+
+  btn.innerHTML = `lat: ${pos.lat.toFixed(2)}, lng: ${pos.lng.toFixed(2)}`;
 }

@@ -136,8 +136,7 @@ def search():
     if dest: dest = [d.to_json() for d in dest]
     else: dest = [[d.to_json() for d in t.destinations.all()] for t in trips.all()]
     
-    label = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    trips_id = {t.title:label[n % len(label)] for n, t in enumerate(trips.all())}
+    trip_ids = {t.id : [d.to_json() for d in t.destinations.all() ] for t in trips.all()}
 
     trips = trips.paginate(page, form.results_per_page.data, error_out=False)
     users = users.paginate(page, form.results_per_page.data, error_out=False)
@@ -146,7 +145,7 @@ def search():
     args.pop("page", None)
     args.pop("tab", None)
 
-    return render_template("main/search.html", form=form, trips=trips, users=users, \
-      query=args, dest={"dest":dest, "filtered":filtered}, trips_id=trips_id)
+    return render_template("main/search.html", form=form, trips=trips, users=users, trip_ids=trip_ids,\
+      query=args, dest={"dest":dest, "filtered":filtered})
   
   return render_template("main/search.html", form=form)

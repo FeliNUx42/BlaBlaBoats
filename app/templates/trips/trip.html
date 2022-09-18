@@ -72,6 +72,9 @@
       <i class="lni lni-circle-plus text-collapsed"></i>
       <i class="lni lni-circle-minus text-expanded"></i>
       Destinations
+      <button class="btn btn-primary ml-4 btn-sm" data-toggle="modal" data-target="#map-modal"
+        onclick='loadMap(index=-1)'>Show route on map
+      </button>
     </h3>
     <div class="collapse m-3" id="dest" data-parent="#accordion">
       <table class="table">
@@ -244,11 +247,12 @@
   {% endif %}
 </div>
 
+<script src="{{ url_for('static', filename='js/show_destinations.js') }}"></script>
+
 <script>
   const destinations = JSON.parse(`{{ markers | tojson }}`);
 
-  const MAP_IDS = ["{{ current_app.config['MAPS_LIGHT_ID'] }}", "{{ current_app.config['MAPS_DARK_ID'] }}"];
+  createMap();
 </script>
 
-<script src="{{ url_for('static', filename='js/show_destinations.js') }}"></script>
 {% endblock %}

@@ -18,4 +18,6 @@ def user_page(uid):
   
   trips = user.trips.paginate(page=page, per_page=current_app.config["RES_PER_PAGE"]/2)
 
-  return render_template("profile/prof.html", user=user, trips=trips, form=form)
+  trip_ids = {t.id : [d.to_json() for d in t.destinations.all()] for t in user.trips.all()}
+
+  return render_template("profile/prof.html", user=user, trips=trips, trip_ids=trip_ids, form=form)

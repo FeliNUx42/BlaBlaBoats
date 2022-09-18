@@ -16,7 +16,9 @@ def dashboard():
   page = request.args.get("page", 1, type=int)
   trips = current_user.trips.paginate(page=page, per_page=current_app.config["RES_PER_PAGE"])
 
-  return render_template("profile/prof.html", user=current_user, trips=trips)
+  trip_ids = {t.id : [d.to_json() for d in t.destinations.all()] for t in current_user.trips.all()}
+
+  return render_template("profile/prof.html", user=current_user, trip_ids=trip_ids, trips=trips)
 
 
 @private.route('/settings', methods=["GET", "POST"])

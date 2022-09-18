@@ -41,3 +41,7 @@ function select_value(btn) {
 
   document.querySelector("input[type='hidden'][name='amount']").value = btn.getAttribute("value") || btn.value;
 }
+
+function test() {
+  console.log("hello world");
+}

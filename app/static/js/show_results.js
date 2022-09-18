@@ -1,12 +1,12 @@
 var result_map;
 
 const resultsMapElement = document.querySelector("#results");
+const r_osm = L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
+
 const resultsDefaultLocation = { lat: 50, lng: 0 };
-const defaultPathColor = "#FF0000";
 const resultsZoom = 6;
 
-const latlngbounds = new google.maps.LatLngBounds();
-const infoWindow = new google.maps.InfoWindow();
+const results_bounds = L.latLngBounds();
 
 // darkMode defined in ./dark_mode.js
 
@@ -16,26 +16,20 @@ function showResults() {
   if (typeof dest == "undefined") return;
   if (typeof trips == "undefined") return;
 
-  createResultMap();
+  result_map = L.map(resultsMapElement, {
+    center: resultsDefaultLocation,
+    zoom: resultsZoom
+  });
+
+  r_osm.addTo(result_map);
 
   if (dest.filtered) setFilteredMarkers();
   else setUnfilteredMarkers();
 
   setTimeout(() => {
-    result_map.fitBounds(latlngbounds);
-    result_map.setCenter(latlngbounds.getCenter());
+    result_map.invalidateSize();
+    result_map.fitBounds(results_bounds);
   }, 300);
-}
-
-function createResultMap() {
-  result_map = new google.maps.Map(resultsMapElement, {
-    mapId: MAP_IDS.at(darkMode),
-    zoom: resultsZoom,
-    center: resultsDefaultLocation,
-    mapTypeControl: false,
-    streetViewControl: false,
-    rotateControl: false
-  });
 }
 
 function setFilteredMarkers() {
@@ -43,7 +37,7 @@ function setFilteredMarkers() {
 
   destinations.map(setMarker);
 
-  destinations.map(d => latlngbounds.extend(d.location));
+  destinations.map(d => results_bounds.extend(d.location));
 }
 
 function setUnfilteredMarkers() {
@@ -52,24 +46,25 @@ function setUnfilteredMarkers() {
   destinations.map(t => {
     t.map(setMarker);
 
-    t.filter(d => d.location).map(d => latlngbounds.extend(d.location));
-    
-    let path = new google.maps.Polyline({
-      path: t.filter(d => d.location).map(d => d.location),
-      strokeColor: defaultPathColor,
-      geodesic: true,
-      strokeOpacity: 1.0,
-      strokeWeight: 2,
-    });
+    t.filter(d => d.location).map(d => results_bounds.extend(d.location));
 
-    path.setMap(result_map);
+    L.polyline(t.filter(d => d.location).map(d => d.location)).addTo(result_map);
   });
 }
 
 function setMarker(d) {
   if (!d.location) return;
 
-  let m = new google.maps.Marker({
+  let {location, arrival, departure, trip_title, trip_url} = d;
+
+  arrival = arrival ? arrival = moment(arrival).format("DD MMM") : "?";
+  departure = departure ? departure = moment(departure).format("DD MMM") : "?";
+
+  let link = `<i>${arrival}</i> to <i>${departure}</i>: <a href="${trip_url}">${trip_title}</a>`;
+
+  L.marker(location).bindPopup(link).addTo(result_map);
+
+  /*
     map: result_map,
     position: d.location,
     title: `${trips[d.trip_title]}: <a href="${d.trip_url}">${d.trip_title}</a>`,
@@ -81,5 +76,5 @@ function setMarker(d) {
     infoWindow.close();
     infoWindow.setContent(m.getTitle());
     infoWindow.open(m.getMap(), m);
-  });
+  });*/
 }

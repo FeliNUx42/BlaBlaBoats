@@ -1,58 +1,54 @@
 var map;
-
-const labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+var poly;
 
 const mapElement = document.querySelector("#map-modal #map");
+const osm = L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
+
 const title = document.querySelector("#map-modal .modal-title");
 const defaultLocation = { lat: 50, lng: 0 };
-const defaultPathColor = "#FF0000";
-const zoom = 6;
+const zoom = 11;
 
 // darkMode defined in ./dark_mode.js
 
 
 function createMap() {
-  map = new google.maps.Map(mapElement, {
-    mapId: MAP_IDS.at(darkMode),
-    zoom: zoom,
-    center: defaultLocation,
-    mapTypeControl: false,
-    streetViewControl: false,
-    rotateControl: false
+  map = L.map(mapElement, {
+    center:defaultLocation,
+    zoom:zoom
   });
+
+  osm.addTo(map);
 
   destinations.map((dest, i) => {
     let pos = dest.location;
     if (!pos) return;
 
-    new google.maps.Marker({
-      map: map,
-      position: pos,
-      label: labels[i % labels.length]
-    });
+    L.marker(pos).addTo(map);
   });
-
-  let path = new google.maps.Polyline({
-    path: destinations.filter(d => d.location).map(d => d.location),
-    geodesic: true,
-    strokeColor: defaultPathColor,
-    strokeOpacity: 1.0,
-    strokeWeight: 2,
-  });
-
-  path.setMap(map);
+  
+  poly = L.polyline(destinations.filter(d => d.location).map(d => d.location)).addTo(map);
 }
 
 function loadMap(index) {
-  if (!map) createMap();
+  setTimeout(() => {
+    _loadMap(index);
+  }, 300);
+}
 
-  let { name, location, arrival, departure, trip_title, trip_url } = destinations[index];
+function _loadMap(index) {
+  map.invalidateSize();
+
+  if (index < 0) {
+    map.fitBounds(poly.getBounds());
+    return;
+  }
+
+  let { name, location, arrival, departure } = destinations[index];
 
   arrival = arrival ? arrival = moment(arrival).format("DD MMM") : "?";
   departure = departure ? departure = moment(departure).format("DD MMM") : "?";
 
   title.innerHTML = `${name} ( <i>${arrival}</i> to <i>${departure}</i> )`;
 
-  map.setCenter(location);
-  map.setZoom(zoom);
+  map.setView(location, zoom);
 }

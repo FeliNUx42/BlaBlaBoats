@@ -56,6 +56,9 @@ def edit(uid):
       db.session.add(create_destination(i, d, trip))
 
     db.session.commit()
+
+    Trip.reindex()
+    
     flash("Trip details updated successfully.", "success")
 
     return redirect(url_for("trips.trip_page", uid=trip.uid))
@@ -121,6 +124,8 @@ def create():
       db.session.add(create_destination(i, d, trip))
 
     db.session.commit()
+
+    Trip.reindex()
 
     flash("Trip created successfully.", "success")
 

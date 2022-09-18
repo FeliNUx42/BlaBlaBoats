@@ -86,9 +86,12 @@
         <div class="container" style="height: 50vh;" id="map"></div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="setBoundaries(bounds)">Set</button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="setBoundaries(bounds)">Apply</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
       </div>
     </div>
   </div>
 </div>
+
+<script src="{{ url_for('static', filename='js/clear_filters.js') }}"></script>
+<script src="{{ url_for('static', filename='js/set_filters.js') }}"></script>

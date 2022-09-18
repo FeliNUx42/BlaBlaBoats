@@ -11,9 +11,15 @@
 
   <h4 class="mt-5 mb-3">Pages:</h4>
   <div class="list-group">
-    <a href="user/" style="border-top-width: 1px;" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">Users <span class="badge bg-primary rounded-pill">{{ User.query.count() }}</span></a>
-    <a href="trip/" style="border-top-width: 1px;" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">Trips <span class="badge bg-primary rounded-pill">{{ Trip.query.count() }}</span></a>
-    <a href="message/" style="border-top-width: 1px;" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">Messages <span class="badge bg-primary rounded-pill">{{ Message.query.count() }}</span></a>
+    <a href="user/" style="border-top-width: 1px;" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+      Users <span class="badge bg-primary text-white rounded-pill">{{ User.query.count() }}</span>
+    </a>
+    <a href="trip/" style="border-top-width: 1px;" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+      Trips <span class="badge bg-primary text-white rounded-pill">{{ Trip.query.count() }}</span>
+    </a>
+    <a href="message/" style="border-top-width: 1px;" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+      Messages <span class="badge bg-primary text-white rounded-pill">{{ Message.query.count() }}</span>
+    </a>
   </div>
 {% endblock %}
 User
