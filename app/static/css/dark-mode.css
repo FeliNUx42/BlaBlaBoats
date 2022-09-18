@@ -1,5 +1,9 @@
 /* based on https://unpkg.com/bootstrap-darkmode@0.7.0/dist/darktheme.css */
 
+:root {
+  --map-tiles-filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
+}
+
 .dark-mode {
   color: #bebebe;
   background-color: #121212; /* #181818, #212121, #323232, #909090 */
@@ -364,4 +368,23 @@
 }
 .dark-mode .navbar .navbar-nav .nav-link.disabled {
   color: #777;
+}
+.dark-mode .map-tiles {
+  filter: var(--map-tiles-filter, none);
+}
+.dark-mode .leaflet-container {
+  background: #242424;
+}
+.dark-mode .leaflet-bar a {
+  background-color: #202020;
+  border-color: #464f58;
+}
+.dark-mode .leaflet-bar a:hover {
+  background-color: #242424;
+}
+.dark-mode .leaflet-container .leaflet-control-attribution {
+  background: rgba(0,0,0,0.6);
+}
+.dark-mode .leaflet-container a {
+  color: #bebebe;
 }
