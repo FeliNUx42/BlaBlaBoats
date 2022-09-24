@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_admin import Admin
 from flask_moment import Moment
+from flask_sitemap import Sitemap
 from elasticsearch import Elasticsearch
 from sendgrid import SendGridAPIClient
 import stripe
@@ -13,6 +14,7 @@ from .adminViews import IndexView
 db = SQLAlchemy()
 moment = Moment()
 admin = Admin(name='Admin Panel', template_mode='bootstrap4', index_view=IndexView(), base_template="layout/admin.html")
+sitemap = Sitemap()
 
 login_manager = LoginManager()
 login_manager.login_view = "auth.login"
@@ -43,6 +45,7 @@ def create_app():
 
   login_manager.init_app(app)
   moment.init_app(app)
+  sitemap.init_app(app)
 
   @app.context_processor
   def globals():
