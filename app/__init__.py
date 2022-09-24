@@ -24,8 +24,8 @@ def load_user(id):
   return User.query.get(int(id))
 
 def create_app():
-  from .models import User, Trip, Destination, Image, Message
-  from .adminViews import UserView, TripView, MessageView
+  from .models import User, Trip, Destination, Image, Message, UserMsg
+  from .adminViews import UserView, TripView, MessageView, UserMsgView
   from .forms.search import SearchForm
   app = Flask(__name__)
 
@@ -51,6 +51,7 @@ def create_app():
       "User": User,
       "Trip": Trip,
       "Message": Message,
+      "UserMsg": UserMsg,
       "enumerate": enumerate,
       "len": len,
       "current_app": current_app
@@ -59,6 +60,7 @@ def create_app():
   admin.add_view(UserView(User, db.session))
   admin.add_view(TripView(Trip, db.session))
   admin.add_view(MessageView(Message, db.session))
+  admin.add_view(UserMsgView(UserMsg, db.session, "UserMsg"))
   admin.init_app(app)
 
 

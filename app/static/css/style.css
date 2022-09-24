@@ -40,3 +40,12 @@ a.disabled{
   background-size: cover;
   border-radius: calc(.25rem - 1px) 0 0 calc(.25rem - 1px);
 }
+
+.font-size-lg {
+  font-size: 1.15rem;
+}
+
+
+form.icon button {
+  color: inherit;
+}

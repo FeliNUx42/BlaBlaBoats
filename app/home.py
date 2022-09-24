@@ -1,18 +1,33 @@
 from flask import Blueprint, current_app, render_template, flash, request
-from .models import Trip, User
-from .forms.search import SearchForm
+from flask_login import current_user
+from .models import Trip, User, UserMsg
+from .forms.search import SearchForm, ContactForm
+import os
+from . import db
 
 
 home = Blueprint("home", __name__)
 
-@home.route("/")
+@home.route("/", methods=["GET", "POST"])
 def index():
-  return render_template("main/home.html")
+  form = SearchForm()
+  c_form = ContactForm()
 
+  if c_form.validate():
+    msg = UserMsg()
+    msg.uid = os.urandom(8).hex()
+    msg.email = c_form.email.data
+    msg.message = c_form.message.data
 
-@home.route("/favicon.ico")
-def icon():
-  return ""
+    if current_user.is_authenticated:
+      msg.user = current_user
+    
+    db.session.add(msg)
+    db.session.commit()
+
+    flash("Message sent successfully.", "success")
+
+  return render_template("main/home.html", form=form, c_form=c_form)
 
 
 @home.route("/search")

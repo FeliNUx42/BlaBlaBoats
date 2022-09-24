@@ -96,6 +96,7 @@ class User(db.Model, UserMixin, SearchableMixin):
   total_trips = db.Column(db.Integer, default=0)
 
   trips = db.relationship("Trip", backref="skipper", lazy="dynamic")
+  user_msg = db.relationship("UserMsg", backref="user", lazy="dynamic")
   msg_sent = db.relationship("Message", foreign_keys="Message.sender_id", backref="sender", lazy="dynamic")
   msg_received = db.relationship("Message", foreign_keys="Message.receiver_id", backref="receiver", lazy="dynamic")
 
@@ -273,3 +274,16 @@ class Message(db.Model, SearchableMixin):
 
   def __repr__(self):
     return f'<Message({self.uid}, {self.subject})>'
+
+
+class UserMsg(db.Model):
+  id = db.Column(db.Integer, primary_key=True)
+  uid = db.Column(db.String(), unique=True)
+  email = db.Column(db.String(128))
+  message = db.Column(db.String(2048))
+  created = db.Column(db.DateTime(timezone=True), default=datetime.utcnow)
+
+  user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+
+  def __repr__(self):
+    return f'<UserMsg({self.uid}, {self.email})>'

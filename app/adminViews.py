@@ -66,3 +66,18 @@ class MessageView(ModelView):
 
   def inaccessible_callback(self, name, **kwargs):
     return abort(403)
+
+
+class UserMsgView(ModelView):
+  can_create = False
+  can_edit = False
+  can_view_details = True
+  can_set_page_size = True
+  column_list = ["uid", "email", "created", "user"]
+  column_searchable_list = ["uid", "email", "message"]
+
+  def is_accessible(self):
+    return current_user.is_authenticated and current_user.admin
+
+  def inaccessible_callback(self, name, **kwargs):
+    return abort(403)

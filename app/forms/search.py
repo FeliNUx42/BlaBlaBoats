@@ -1,7 +1,7 @@
 from flask import request, current_app
 from flask_wtf import FlaskForm
-from wtforms import StringField, DateField, SelectField, DecimalField, IntegerField
-from wtforms.validators import DataRequired, Optional, NumberRange
+from wtforms import StringField, DateField, SelectField, DecimalField, IntegerField, SubmitField, TextAreaField
+from wtforms.validators import DataRequired, Optional, NumberRange, Email, Length
 
 
 class SearchForm(FlaskForm):
@@ -35,3 +35,9 @@ class MsgSearchForm(FlaskForm):
     if 'meta' not in kwargs:
       kwargs['meta'] = {'csrf': False}
       super(MsgSearchForm, self).__init__(*args, **kwargs)
+
+
+class ContactForm(FlaskForm):
+  email = StringField(label="Your Email Address:", validators=[DataRequired(), Email(), Length(6, 128)])
+  message = TextAreaField(label="Your Message:", validators=[DataRequired(), Length(max=2048)])
+  submit = SubmitField("Send Message")

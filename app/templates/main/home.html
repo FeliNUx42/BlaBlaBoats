@@ -12,5 +12,111 @@
 {% endblock %}
 
 {% block content %}
-<h1>Hello</h1>
+{% include "layout/search_form.html" %}
+
+<h2 class="mt-4">About Us</h2>
+<div class="font-size-lg">
+  <p>
+    BlaBlaBoat is a website intended to connect boat owners and passionate people, who just want to experience more!
+    It can be used for lots of different purposes.
+    BlaBlaBoat is primarily used by two groups of people, those who publish trips (boat owners) and those, who are looking for a nice ride (hitchhikers): 
+  </p>
+
+  <div class="jumbotron p-4">
+    Boat owners, who...
+
+    <ul>
+      <li>have already planned a trip, but are willing to take hitchhikers with them.</li>
+      <li>have a regatta, and are still looking for crew members.</li>
+      <li>organize expeditions and want to sell tickets for it.</li>
+    </ul>
+  
+    Hitchhikers,  who... 
+
+    <ul class="mb-0">
+      <li>need to get from a place A to a place B, and want to do it in a fun and eco friendly way.</li>
+      <li>want to try sailing, but aren't sure if it's for them.</li>
+      <li>want to gain more experience before buying a boat for themselves.</li>
+      <li>want to meet new interesting people.</li>
+    </ul>
+  </div>
+</div>
+   
+
+<h2 class="mt-5">Getting started</h2>
+<ol class="font-size-lg">
+  <li class="mb-3">
+    <b>Create your account.</b>
+    To be able to use all the functionalities of BlaBlaBoat, you need to create an account.
+    Don't worry, it is completely free! First you need to click on the <a href="{{ url_for('auth.signup') }}">Sign Up</a> link on the menu bar.
+    Then fill out the form and submit it. You will then be asked to verify your email-address. Do it and then you're ready to go!
+  </li>
+  <li class="mb-3">
+    <b>Your dashboard.</b>
+    After creating your account, you will be redirected to your own dashboard.
+    On that page you can see your personal information and all the trips you have created.
+    To access this page at any given time, click on your username in the menu bar <b class="text-danger">*</b>, and then click on <a href="{{ url_for('private.dashboard') }}">Dashboard</a>.
+  </li>
+  <li class="mb-3">
+    <b>Personalize your account.</b>
+    For other people to better understand who you might be, you need to personalize your account.
+    In order to do so, click on your username in the menu bar <b class="text-danger">*</b>, and then click on <a href="{{ url_for('private.settings') }}">Settings</a>.
+    Once on the Settings-page, you can add a <b>user description</b> and upload a <b>profile picture</b>.
+    You can also change your username, first name and last name.
+  </li>
+  <li class="mb-3">
+    <b>Search for trips.</b>
+    To search for trips you can type in keywords in the search box in the menu bar and then hit <i>Enter</i>.
+    However there is also an extended search function.
+    Go to the <a href="#">home page</a> and click on the <i class="text-info font-weight-bold">Show Filters</i> button.
+    This will display all extended search features:
+    <ul class="my-2">
+      <li>The first filter allows you to show only trips that are in a given range of a location set by you.</li>
+      <li>The second filter permits you to only show the trips that are within a given time-span set by you.</li>
+      <li>The third filter allows you to only search for specific types of boats, sailing modes and how many people could come.</li>
+      <li>In the last row you can set how you want the results to be sorted and how many results you want per page.</li>
+    </ul>
+      
+      Please note, that you can combine different filters (i.e. location and time span...) and you can remove the filters by clicking the <i class="text-info font-weight-bold">Reset</i> button on the right.
+  </li>
+  <li class="mb-3">
+    <b>Create your own trip.</b>
+    To create your own trip go to your <a href="{{ url_for('private.dashboard') }}">Dashboard</a> page, switch to the <i>Planned Trips</i> tab and click the <a href="{{ url_for('trips.create') }}">Create a new Trip</a> button.
+    Then, you need to set a title and write a description.
+    In the destination section, you can set all your stopovers. This is optional but strongly suggested.
+    Then you can add more info in the <i>More Information</i> section.
+    Once all this is done, click the <i>Create Trip</i> button to save your trip. Note, that you can still edit some details later.
+    Only after having created your trip, you will be able to add images to it.
+  </li>
+</ol>
+
+<div>
+  <b class="text-danger">*</b> Please note that if you don't see your username on the menu bar, you need to <a href="{{ url_for('auth.login') }}">Log In</a> to your account.
+</div>
+
+<h2 class="mt-5">FAQ</h2>
+<p class="font-size-lg font-italic">No questions have been asked yet. Feel free to write to us via the contact form below.</p>
+
+<h2 class="mt-5">Contact Us</h2>
+<p class="font-size-lg">If you have feedback, complaints, recommendations for new features... feel free to write to us.</p>
+
+<form action="" method="post">
+  {{ c_form.csrf_token() }}
+
+  <div class="form-group">
+    <label class="control-label" for="">{{ c_form.email.label }}</label>
+    <div>{{ c_form.email(class="form-control") }}</div>
+  </div>
+
+  <div class="form-group">
+    <label class="control-label" for="">{{ c_form.message.label }}</label>
+    <div>{{ c_form.message(class="form-control", rows="10") }}</div>
+  </div>
+
+  <div class="form-group">
+    <div>{{ c_form.submit(class="btn btn-primary")}}</div>
+  </div>
+</form>
+
+
 {% endblock %}
