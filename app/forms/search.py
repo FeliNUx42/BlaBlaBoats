@@ -38,6 +38,6 @@ class MsgSearchForm(FlaskForm):
 
 
 class ContactForm(FlaskForm):
-  email = StringField(label="Your Email Address:", validators=[DataRequired(), Email(), Length(6, 128)])
-  message = TextAreaField(label="Your Message:", validators=[DataRequired(), Length(max=2048)])
+  email = StringField(label="Your Email Address", validators=[DataRequired(), Email(), Length(6, 128)])
+  message = TextAreaField(label="Your Message", validators=[DataRequired(), Length(max=2048)])
   submit = SubmitField("Send Message")

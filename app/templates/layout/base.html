@@ -8,6 +8,7 @@
   {% include "layout/imports.html" %}
   {{ moment.include_moment() }}
   {% from "layout/macros.html" import render_pagination with context %}
+  {% from "layout/macros.html" import alerts with context %}
   <title>{% block title %}{% endblock %} &ndash; BlaBlaBoat</title>
 </head>
 

@@ -4,14 +4,7 @@
 
 {% block content %}
 
-{% for field, errors in form.errors.items() %}
-<div class="alert alert-danger alert-dismissible fade show" role="alert">
-  {{ ', '.join(errors) }}
-  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-    <span aria-hidden="true">&times;</span>
-  </button>
-</div>
-{% endfor %}
+{{ alerts(form) }}
 
 <form class="form-horizontal" method="POST" action="{{ url_for('private.settings') }}" enctype="multipart/form-data">
 
@@ -22,7 +15,7 @@
   {{ form.csrf_token() }}
 
   <div class="form-group">
-    <label class="control-label" for="">{{ form.username.label }}</label>
+    <label class="control-label" for="">{{ form.username.label }}:</label>
     <div>{{ form.username(class="form-control") }}</div>
   </div>
 
@@ -30,7 +23,7 @@
     <label class="control-label" for="">{{ form.description.label }}</label>
     <a href="javascript:void(0)" title="User Description" data-toggle="popover" data-trigger="hover"
       data-content="You can talk about: <ul><li>your experiences</li><li>your sailing diplomas</li><li>why you use BlaBlaBoat</li><li>etc.</li></ul>">
-      (more Information)</a>
+      (more Information)</a>:
     <div>{{ form.description(class="form-control", rows="8") }}</div>
   </div>
 
@@ -40,12 +33,12 @@
   </div>
 
   <div class="form-group">
-    <label class="control-label" for="">{{ form.first_name.label }}</label>
+    <label class="control-label" for="">{{ form.first_name.label }}:</label>
     <div>{{ form.first_name(class="form-control") }}</div>
   </div>
 
   <div class="form-group">
-    <label class="control-label" for="">{{ form.last_name.label }}</label>
+    <label class="control-label" for="">{{ form.last_name.label }}:</label>
     <div>{{ form.last_name(class="form-control") }}</div>
   </div>
 

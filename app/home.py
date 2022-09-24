@@ -13,7 +13,7 @@ def index():
   form = SearchForm()
   c_form = ContactForm()
 
-  if c_form.validate():
+  if c_form.validate_on_submit():
     msg = UserMsg()
     msg.uid = os.urandom(8).hex()
     msg.email = c_form.email.data

@@ -4,14 +4,7 @@
 
 {% block content %}
 
-{% for field, errors in form.errors.items() %}
-<div class="alert alert-danger alert-dismissible fade show" role="alert">
-  {{ ', '.join(errors) }}
-  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-    <span aria-hidden="true">&times;</span>
-  </button>
-</div>
-{% endfor %}
+{{ alerts(form) }}
 
 <form class="form-horizontal" method="POST" action="">
 
@@ -22,32 +15,32 @@
   {{ form.csrf_token() }}
 
   <div class="form-group">
-    <label class="control-label" for="">{{ form.username.label }}</label>
+    <label class="control-label" for="">{{ form.username.label }}:</label>
     <div>{{ form.username(class="form-control") }}</div>
   </div>
 
   <div class="form-group">
-    <label class="control-label" for="">{{ form.email.label }}</label>
+    <label class="control-label" for="">{{ form.email.label }}:</label>
     <div>{{ form.email(class="form-control") }}</div>
   </div>
 
   <div class="form-group">
-    <label class="control-label" for="">{{ form.first_name.label }}</label>
+    <label class="control-label" for="">{{ form.first_name.label }}:</label>
     <div>{{ form.first_name(class="form-control") }}</div>
   </div>
 
   <div class="form-group">
-    <label class="control-label" for="">{{ form.last_name.label }}</label>
+    <label class="control-label" for="">{{ form.last_name.label }}:</label>
     <div>{{ form.last_name(class="form-control") }}</div>
   </div>
 
   <div class="form-group">
-    <label class="control-label" for=""> {{ form.password.label }}</label>
+    <label class="control-label" for=""> {{ form.password.label }}:</label>
     <div>{{ form.password(class="form-control") }}</div>
   </div>
 
   <div class="form-group">
-    <label class="control-label" for=""> {{ form.r_password.label }}</label>
+    <label class="control-label" for=""> {{ form.r_password.label }}:</label>
     <div>{{ form.r_password(class="form-control") }}</div>
   </div>
 

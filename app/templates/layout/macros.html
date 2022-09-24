@@ -27,3 +27,19 @@
   </ul>
 </div>
 {% endmacro %}
+
+
+{# Alerts Macro #}
+
+{% macro alerts(form) %}
+<div>
+  {% for field, errors in form.errors.items() %}
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ form[field].label }}: {{ ', '.join(errors) }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  {% endfor %}
+</div>
+{% endmacro %}

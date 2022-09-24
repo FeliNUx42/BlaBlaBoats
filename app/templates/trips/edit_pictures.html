@@ -4,23 +4,8 @@
 
 {% block content %}
 
-{% for field, errors in add_form.errors.items() %}
-<div class="alert alert-danger alert-dismissible fade show" role="alert">
-  {{ errors }}
-  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-    <span aria-hidden="true">&times;</span>
-  </button>
-</div>
-{% endfor %}
-
-{% for field, errors in del_form.errors.items() %}
-<div class="alert alert-danger alert-dismissible fade show" role="alert">
-  {{ errors }}
-  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-    <span aria-hidden="true">&times;</span>
-  </button>
-</div>
-{% endfor %}
+{{ alerts(add_form) }}
+{{ alerts(del_form) }}
 
 <h2>Your Images (<a href="{{ url_for('trips.trip_page', uid=trip.uid) }}" max-length="30">{{ trip.title }}</a>) <button
     class="btn btn-primary float-right" data-toggle="modal" data-target="#addImg">Add Image</button> </h2>
