@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, request, curren
 from flask_login import current_user
 from .models import User
 from .forms.messages import MsgContactForm
+from . import sitemap
 
 
 profile = Blueprint("profile", __name__)
@@ -21,3 +22,9 @@ def user_page(uid):
   trip_ids = {t.id : [d.to_json() for d in t.destinations.all()] for t in user.trips.all()}
 
   return render_template("profile/prof.html", user=user, trips=trips, trip_ids=trip_ids, form=form)
+
+
+@sitemap.register_generator
+def user_page():
+  for user in User.query.all():
+    yield "profile.user_page", {"uid": user.uid}

@@ -4,7 +4,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 from .forms.auth import SignupForm, ConfirmForm, ResetRequestForm, ResetPasswordForm,LoginForm, ChangePasswordForm
 from .models import User
 from .emails import send_confirm_email, send_reset_email
-from . import db
+from . import db, sitemap
 import os
 
 
@@ -164,3 +164,10 @@ def security():
     return redirect(url_for("profile.user_page", uid=current_user.uid))
     
   return render_template("auth/security.html", form=form)
+
+
+@sitemap.register_generator
+def signup(): yield "auth.signup", {}
+
+@sitemap.register_generator
+def login(): yield "auth.login", {}

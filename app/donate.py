@@ -2,7 +2,7 @@ from flask import Blueprint, current_app, flash, redirect, render_template, requ
 from flask_login import current_user
 from .forms.donate import DonateForm
 import locale
-from . import db
+from . import db, sitemap
 
 
 locale.setlocale(locale.LC_MONETARY, 'de_CH.UTF-8')
@@ -62,3 +62,7 @@ def cancel():
   flash("Unfortunately the donation was aborted. Please try again.", "danger")
 
   return redirect(url_for("donate.donate_page"))
+
+
+@sitemap.register_generator
+def donate_page(): yield "donate.donate_page", {}

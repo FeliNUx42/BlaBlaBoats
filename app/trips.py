@@ -4,7 +4,7 @@ from .models import Destination, Trip, Image
 from .forms.messages import MsgAboutForm
 from .forms.trips import CreateEditTripForm, DeleteTrip, AddImage, DeleteImage
 from .tools import save_picture, remove_picture, create_destination, create_place, delete_trip, confirmed_required
-from . import db
+from . import db, sitemap
 import os
 
 
@@ -199,3 +199,9 @@ def pictures(uid):
     flash("Image deleted successfully.", "success")
   
   return render_template("trips/edit_pictures.html", add_form=add_form, del_form=del_form, trip=trip)
+
+
+@sitemap.register_generator
+def trip_page():
+  for trip in Trip.query.all():
+    yield "trips.trip_page", {"uid": trip.uid}

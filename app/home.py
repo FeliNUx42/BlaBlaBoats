@@ -3,7 +3,7 @@ from flask_login import current_user
 from .models import Trip, User, UserMsg
 from .forms.search import SearchForm, ContactForm
 import os
-from . import db
+from . import db, sitemap
 
 
 home = Blueprint("home", __name__)
@@ -164,3 +164,7 @@ def search():
       query=args, dest={"dest":dest, "filtered":filtered})
   
   return render_template("main/search.html", form=form)
+
+
+@sitemap.register_generator
+def index(): yield "home.index", {}
