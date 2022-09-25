@@ -39,7 +39,6 @@ def create_app():
   app.stripe = stripe
   app.stripe.api_key = app.config["STRIPE_SECRET_KEY"]
 
-
   db.init_app(app)
   db.create_all(app=app)
 

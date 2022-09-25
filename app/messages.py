@@ -1,4 +1,3 @@
-from click import confirm
 from flask import Blueprint, render_template, redirect, request, flash, abort
 from flask_login import login_required, current_user
 from .models import User, Message, Trip

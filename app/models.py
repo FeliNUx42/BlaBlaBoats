@@ -1,5 +1,5 @@
 from werkzeug.security import generate_password_hash, check_password_hash
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from itsdangerous import URLSafeTimedSerializer as Serializer
 from app.search import add_to_index, remove_from_index
 from datetime import datetime
 from flask import current_app, url_for
@@ -115,15 +115,15 @@ class User(db.Model, UserMixin, SearchableMixin):
   def full_name(self):
     return self.first_name + " " + self.last_name
   
-  def get_token(self, command, expire_sec=1800):
-    s = Serializer(current_app.config['SECRET_KEY'], expire_sec)
-    return s.dumps({'user_id': self.id, 'command': command}).decode('utf-8')
+  def get_token(self, command):
+    s = Serializer(current_app.config['SECRET_KEY'])
+    return s.dumps({'user_id': self.id, 'command': command})
   
   @staticmethod
-  def verify_token(token):
+  def verify_token(token, expire_sec=1800):
     s = Serializer(current_app.config['SECRET_KEY'])
     try:
-      data = s.loads(token)
+      data = s.loads(token, max_age=expire_sec)
     except:
       return None, None
     return User.query.get(data['user_id']), data['command']

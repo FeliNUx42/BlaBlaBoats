@@ -1,6 +1,5 @@
 from flask import current_app, url_for
-from requests import request
-from sendgrid.helpers.mail import Mail, Email, To, Content
+from sendgrid.helpers.mail import Mail
 
 
 def send_confirm_email(user, command="confirm_email"):

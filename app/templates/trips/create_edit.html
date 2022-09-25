@@ -147,6 +147,13 @@
   $("form").bind('submit', function () {
     $(window).unbind('beforeunload');
   });
+  $(document).on("keypress", 'input', function (e) {
+    var code = e.keyCode || e.which;
+    if (code == 13) {
+        e.preventDefault();
+        return false;
+    }
+  });
 </script>
 
 <script src="{{ url_for('static', filename='js/autocomplete.js') }}"></script>

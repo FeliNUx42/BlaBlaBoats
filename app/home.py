@@ -1,4 +1,4 @@
-from flask import Blueprint, current_app, render_template, flash, request
+from flask import Blueprint, render_template, flash, request
 from flask_login import current_user
 from .models import Trip, User, UserMsg
 from .forms.search import SearchForm, ContactForm
