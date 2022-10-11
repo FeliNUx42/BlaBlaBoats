@@ -38,19 +38,17 @@ All the python packages are listed in the `requirements.txt` file.
 
 To run this project you need to have python-3.8 and pip3 installed. The following instructions only work for running the app on **Ubuntu**.
 
-1\. Clone the github repo:
+1«. Clone the github repo:
 ```
 $ gh repo clone FeliNUx42/BlaBlaBoat
 ```
 
-2\. Install all the required packages:
+2«. Install all the required packages:
 ```
 $ pip3 install -r requirements.txt
 ```
 
-3\. Install elasticsearch:
-
-4\. Create a `.env` file:
+3«. Create a `.env` file:
 ```
 # required environment variables
 FLASK_APP=main.py
@@ -83,9 +81,16 @@ Optional environment variables:
 * `SQLALCHEMY_DATABASE_URI`: database url
 * `ELASTICSEARCH_URL`: erlasticsearch api url
 
-5\. Set up Elasticsearch:
+4\. Install & set up elasticsearch:
 
-6\. Run the app:
+Follow [this guide](https://www.elastic.co/guide/en/elasticsearch/reference/current/deb.html) to install elasticsearch on Ubuntu. Then you will need to disable password protection for your elasticsearch database. Do this by editing the settings file (`/etc/elasticsearch/elasticsearch.yml`) and disable all security features.
+
+If you still want to password-protect your elasticsearch database, you will need to do changes to the code (in `app/__init__.py`, line 36)
+
+https://github.com/FeliNUx42/BlaBlaBoat/blob/affda726078946c04dd03639fa3f31863ad3e4a2/app/__init__.py#L36
+
+
+5\. Run the app:
 ```
 $ flask run
 ```
