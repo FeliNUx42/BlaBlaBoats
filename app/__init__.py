@@ -1,5 +1,5 @@
 from flask import Flask, current_app, g
-from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy 
 from flask_login import LoginManager
 from flask_admin import Admin
 from flask_moment import Moment
@@ -65,6 +65,13 @@ def create_app():
   admin.add_view(UserMsgView(UserMsg, db.session, "UserMsg"))
   admin.init_app(app)
 
+  @app.cli.command("init-db")
+  def init_db():
+    User.reindex()
+    Trip.reindex()
+    Message.reindex()
+
+    print("\033[92mDatabase initialized successfully!\033[00m")
 
   from .home import home
   from .donate import donate
