@@ -16,7 +16,7 @@ class UserView(ModelView):
   can_create = False
   can_view_details = True
   can_set_page_size = True
-  column_list = ["uid", "username", "email", "first_name", "last_name", "created", "confirmed", "donator"]
+  column_list = ["uid", "username", "email", "first_name", "last_name", "created", "confirmed", "donor"]
   column_searchable_list = ["uid", "username", "email"]
 
   def is_accessible(self):

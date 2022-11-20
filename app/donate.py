@@ -48,7 +48,7 @@ def success():
   session = current_app.stripe.checkout.Session.retrieve(request.args["id"])
 
   if current_user.is_authenticated:
-    current_user.donator = True
+    current_user.donor += int(session.amount_total / 100)
     db.session.commit()
 
   value = locale.currency(session.amount_total / 100)

@@ -166,5 +166,9 @@ def search():
   return render_template("main/search.html", form=form)
 
 
+@home.route("/terms-and-conditions")
+def terms():
+  return render_template("main/terms.html")
+
 @sitemap.register_generator
 def index(): yield "home.index", {}

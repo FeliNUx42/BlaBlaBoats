@@ -92,7 +92,7 @@ class User(db.Model, UserMixin, SearchableMixin):
   profile_pic = db.Column(db.String(24), default="default.png")
   password_hash = db.Column(db.String(128))
 
-  donator = db.Column(db.Boolean, default=False)
+  donor = db.Column(db.Integer, default=0)
   total_trips = db.Column(db.Integer, default=0)
 
   trips = db.relationship("Trip", backref="skipper", lazy="dynamic")

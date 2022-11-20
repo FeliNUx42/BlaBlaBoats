@@ -102,7 +102,16 @@ Then initialize your elasticsearch database by running:
 $ flask init-db
 ```
 
-6\. Run the app:
+6\. Compile email-files:
+
+Install the [Bootstrap-Email](https://bootstrapemail.com/) *Command Line Tools* by following [this guide](https://bootstrapemail.com/docs/usage).  
+Then compile the email files by running the following command:
+```
+$ bootstrap-email -p "app/templates/emails/*" -d "app/templates/emails/compiled/*"
+```
+
+
+7\. Run the app:
 ```
 $ python3 -m flask run
 ```
