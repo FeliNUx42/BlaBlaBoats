@@ -3,7 +3,7 @@ from sendgrid.helpers.mail import Mail
 
 
 def send_confirm_email(user, command="confirm_email"):
-  subject = "BlaBlaBoat: Verify Email"
+  subject = "BlaBlaBoats: Verify Email"
 
   token = user.get_token(command)
 
@@ -22,7 +22,7 @@ def send_confirm_email(user, command="confirm_email"):
   current_app.sendgrid.send(msg)
 
 def send_reset_email(user, command="reset_password"):
-  subject = "BlaBlaBoat: Reset Password"
+  subject = "BlaBlaBoats: Reset Password"
 
   token = user.get_token(command)
 

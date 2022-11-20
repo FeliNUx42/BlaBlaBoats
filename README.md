@@ -1,4 +1,4 @@
-# <img src="./app/static/logo.png" height="20px"> BlaBlaBoat
+# <img src="./app/static/logo.png" height="20px"> BlaBlaBoats
 
 ![Home Page](./images/home.png)
 
@@ -14,7 +14,7 @@ BlaBlaBoats is a website created with [Flask](https://flask.palletsprojects.com/
 
 ## General info
 
-BlaBlaBoat is a website intended to connect boat owners and passionate people, who just want to experience more! It can be used for lots of different purposes. BlaBlaBoat is primarily used by two groups of people, those who publish trips (boat owners) and those, who are looking for a nice ride (hitchhikers).
+BlaBlaBoats is a website intended to connect boat owners and passionate people, who just want to experience more! It can be used for lots of different purposes. BlaBlaBoats is primarily used by two groups of people, those who publish trips (boat owners) and those, who are looking for a nice ride (hitchhikers).
 
 [> Here is a live demo: ...]: #
 
@@ -40,12 +40,12 @@ To run this project you need to have python-3.8 and pip3 installed. The followin
 
 1\. Clone the github repo:
 ```
-$ gh repo clone FeliNUx42/BlaBlaBoat
+$ gh repo clone FeliNUx42/BlaBlaBoats
 ```
 
 2\. Cd into your repository
 ```
-$ cd BlaBlaBoat/
+$ cd BlaBlaBoats/
 ```
 
 3\. Install all the required packages:
@@ -91,7 +91,7 @@ Optional environment variables:
 Follow [this guide](https://www.elastic.co/guide/en/elasticsearch/reference/current/deb.html) to install elasticsearch on Ubuntu. Then you will need to disable password protection for your elasticsearch database. Do this by editing the settings file (`/etc/elasticsearch/elasticsearch.yml`) and disable all security features.
 
 If you still want to password-protect your elasticsearch database, you will need to do changes to the code:
-https://github.com/FeliNUx42/BlaBlaBoat/blob/affda726078946c04dd03639fa3f31863ad3e4a2/app/__init__.py#L36
+https://github.com/FeliNUx42/BlaBlaBoats/blob/affda726078946c04dd03639fa3f31863ad3e4a2/app/__init__.py#L36
 
 Then open a python shell within your project by running:
 ```

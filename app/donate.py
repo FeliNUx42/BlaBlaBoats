@@ -52,7 +52,7 @@ def success():
     db.session.commit()
 
   value = locale.currency(session.amount_total / 100)
-  flash(f"Thank you for donating {value} to BlaBlaBoat.", "success")
+  flash(f"Thank you for donating {value} to BlaBlaBoats.", "success")
 
   return redirect(url_for("donate.donate_page"))
 
