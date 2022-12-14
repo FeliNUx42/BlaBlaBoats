@@ -93,9 +93,6 @@ Follow [this guide](https://www.elastic.co/guide/en/elasticsearch/reference/curr
 If you still want to password-protect your elasticsearch database, you will need to do changes to the code:
 https://github.com/FeliNUx42/BlaBlaBoats/blob/affda726078946c04dd03639fa3f31863ad3e4a2/app/__init__.py#L36
 
-Then open a python shell within your project by running:
-```
-$ python3 -m flask shell
 ```
 Then initialize your elasticsearch database by running:
 ```
